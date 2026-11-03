@@ -9,7 +9,7 @@ A journey is a directory of screens a person can click through. It is **hi-fi an
 enough to portray the message, and no further**: `data-go` and the four states are the whole
 vocabulary. A prototype that needs to validate a form is a product feature — say so and stop.
 
-Read the design-system skill first (`../design-system/SKILL.md`, beside this one). **Build from the system ONLY**; if the system
+Read `.harbor/skills/design-system/SKILL.md` first. **Build from the system ONLY**; if the system
 does not exist yet, laying it is the work that comes before this one.
 
 ## 1. A journey is a directory

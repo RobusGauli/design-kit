@@ -16,3 +16,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --test
+  windows-install:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tests/install.test.mjs

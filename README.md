@@ -20,10 +20,9 @@ The scripts they ship (`lint.mjs`, `tokens-to-css.mjs`, `contrast.mjs`, `verify.
 set up https://raw.githubusercontent.com/RobusGauli/design-kit/main/SETUP.md
 ```
 
-The agent runs the installer, checks for Node or Bun, and offers to add the `design/` starter
-files to the repo you are in.
+The agent finds the repo you are in and runs the installer there.
 
-**Or run the installer yourself:**
+**Or run the installer yourself, from the repo root:**
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.sh | sh
@@ -35,11 +34,20 @@ On Windows, in PowerShell:
 irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | iex
 ```
 
-The installer downloads the **latest release** (not `main`), copies `skills/` to
-`~/.local/share/design-kit/` with a receipt in `install.json`, and links each skill into
-`~/.claude/skills/` and `~/.agents/skills/` (plus `~/.cursor/skills/` and `~/.kiro/skills/` when
-those tools are installed). It never replaces a file or link it did not create, and never touches
-a repo. Re-run it to update. Pin a version with `sh -s v0.1.0` or `DESIGN_KIT_REF=v0.1.0`.
+It installs **into the repo**, not your home directory, so the skills are committed with the
+project and every teammate's agent gets them. It writes the same layout Harbor's `design init`
+writes, so the repo also works in Harbor:
+
+```
+.harbor/skills/design-system/  .harbor/skills/prototype/    the two skills
+.claude/skills/  .kiro/skills/  .cursor/rules/  AGENTS.md    pointers, so each agent finds them
+design/DESIGN.md                                             the brief (yours; never overwritten)
+design/studio-bridge.js  design/*.mjs                        the prototype runtime and the scripts
+```
+
+It downloads the **latest release** (not `main`), never deletes a file, refreshes only its own files
+when they differ, keeps `design/DESIGN.md`, and appends one paragraph to an existing `AGENTS.md`
+once. Re-run it to update. Pin a version with `sh -s v0.2.0` or `DESIGN_KIT_REF=v0.2.0`.
 
 ## Use
 
@@ -47,8 +55,7 @@ In a repo: *"lay the design system"*, then *"prototype a checkout"*. The skills 
 
 ## Browse your prototypes
 
-From the repo root: `node design/studio.mjs --open` (copy the scripts into `design/` first; SETUP.md
-step 3 does it). It serves a read-only dashboard on 127.0.0.1: journeys, screens and variants, each
+From the repo root: `node design/studio.mjs --open`. It serves a read-only dashboard on 127.0.0.1: journeys, screens and variants, each
 screen in a frame with state, theme, variant and viewport controls, a flow map drawn from the
 `data-go` links, the shots, and `JOURNEY.md`. It reloads when files change and writes nothing.
 Screens must be plain `.html`, or declare `preview.origin` in `design/design.json` and start that
