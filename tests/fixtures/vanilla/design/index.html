@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>design: journeys and the catalogue</title>
+    <script src="./studio-bridge.js"></script>
+    <link rel="stylesheet" href="./components.css" />
+  </head>
+  <body>
+    <main data-slot="page">
+      <h1 data-slot="heading">design</h1>
+      <p data-slot="text" data-tone="muted">
+        The playground. No framework, no build step: these files open from a static server and
+        from <code>file://</code> alike.
+      </p>
+      <div data-slot="stack">
+        <h2 data-slot="heading" data-size="card">Example: pick an item, look at it, finish</h2>
+        <div data-slot="row">
+          <a data-slot="button" data-variant="secondary" href="./journeys/example/list.html">list (entry)</a>
+          <a data-slot="button" data-variant="secondary" href="./journeys/example/detail.html">detail</a>
+          <a data-slot="button" data-variant="secondary" href="./journeys/example/detail--dense.html">detail · dense</a>
+          <a data-slot="button" data-variant="secondary" href="./journeys/example/done.html">done</a>
+        </div>
+      </div>
+      <div data-slot="row">
+        <a data-slot="button" href="./catalogue.html">Open the catalogue</a>
+      </div>
+    </main>
+  </body>
+</html>

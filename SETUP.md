@@ -32,13 +32,17 @@ works, tell the user, and continue: the skills still install.
 ## 3. Prepare the current repo (only if the user is in one)
 
 If the current directory is a git repo the user wants to design in, ask once: *Add design-kit's
-`design/` starter files to this repo?* On yes, copy these two files, and **never overwrite one
+`design/` starter files to this repo?* On yes, copy these files, and **never overwrite one
 that exists** (say which you skipped):
 
 | from | to |
 |---|---|
 | `$S/design-system/assets/DESIGN.md` | `design/DESIGN.md` |
 | `$S/design-system/assets/studio-bridge.js` | `design/studio-bridge.js` |
+| `$S/design-system/scripts/*.mjs` (each one) | `design/<name>.mjs` |
+
+For a script that already exists, compare it with the skill's copy. If it differs, leave it and tell
+the user which one differs; do not overwrite it.
 
 Do not lay tokens or write components now. That is the design-system skill's work, and it starts
 by looking at the repo's stack.
@@ -51,4 +55,6 @@ End with these lines, and nothing that needs a reply:
   scales, contrast, states, the component floor, a catalogue and a lint, in the repo's own stack).
 - *"Prototype a checkout"* → the `prototype` skill (a clickable journey in
   `design/journeys/<name>/`).
+- *"Show me the prototypes"* → run `node design/studio.mjs --open` from the repo root: a read-only
+  dashboard (screens, flow map, shots, brief) on 127.0.0.1. Print the URL it prints.
 - To update later, run the same installer again.

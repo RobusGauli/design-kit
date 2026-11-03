@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>detail · example</title>
+    <!-- RELATIVE, NOT ABSOLUTE: a static journey is real files, so `../../studio-bridge.js`
+         resolves under a static server AND under file://. (A framework design app is a single
+         page served at every screen path, and uses `/studio-bridge.js` instead.) The tag is a
+         CLASSIC script in <head> — no defer, no module — so `?state`, `?variant` and `?theme`
+         are on <html> before first paint. -->
+    <script src="../../studio-bridge.js"></script>
+    <link rel="stylesheet" href="../../components.css" />
+  </head>
+  <body>
+    <main data-screen="detail" data-slot="page" data-states="empty loading error ready">
+      <div data-slot="stack">
+        <h1 data-slot="heading">A first item</h1>
+        <p data-slot="text" data-size="sm" data-tone="muted">
+          Hello <span data-bind="visitor">there</span>. This is the item you picked.
+        </p>
+      </div>
+
+      <div data-slot="stack" data-when="loading">
+        <span data-slot="skeleton"></span>
+        <span data-slot="skeleton" data-shape="card"></span>
+      </div>
+
+      <div data-when="empty">
+        <div data-slot="empty">
+          <h4 data-slot="empty-title">Nothing to show</h4>
+          <p data-slot="empty-description">This item has no content yet.</p>
+        </div>
+      </div>
+
+      <div data-slot="card" data-when="error ready">
+        <div data-slot="card-header">
+          <h3 data-slot="card-title">What it is</h3>
+          <p data-slot="card-description">
+            A paragraph of the sort a real screen carries, long enough that the type scale and the
+            measure are both visible at a glance.
+          </p>
+        </div>
+        <div data-slot="stack">
+          <span data-slot="badge" data-tone="danger" data-when="error"><span data-slot="badge-dot"></span>could not save</span>
+          <p data-slot="text" data-size="sm">
+            Every surface has four states, and this screen declares all four on its root. A state a
+            screen cannot show is deleted from data-states with a reason, never left unbuilt.
+          </p>
+        </div>
+        <div data-slot="card-footer">
+          <button data-go="back" data-slot="button" data-variant="ghost" type="button">Back</button>
+          <button data-go="done" data-slot="button" type="button">Finish</button>
+        </div>
+      </div>
+
+      <div data-slot="row">
+        <!-- A VARIANT IS A FILE. In a static journey the bridge rewrites this to
+             `detail--dense.html`; in a framework journey it becomes `?variant=dense`. -->
+        <button data-go="detail?variant=dense" data-size="sm" data-slot="button" data-variant="secondary" type="button">
+          See the dense variant
+        </button>
+      </div>
+    </main>
+  </body>
+</html>

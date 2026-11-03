@@ -10,7 +10,7 @@ Kiro, ...) to lay a product's design system and build clickable prototypes from 
   parameters, links as `data-go` attributes, screenshots as evidence, and numbered feedback rounds.
 
 The scripts they ship (`lint.mjs`, `tokens-to-css.mjs`, `contrast.mjs`, `verify.mjs`,
-`shots.mjs`) are zero-dependency and run under Node 18+ or Bun.
+`shots.mjs`, `studio.mjs`) are zero-dependency and run under Node 18+ or Bun.
 
 ## Install
 
@@ -44,6 +44,15 @@ a repo. Re-run it to update. Pin a version with `sh -s v0.1.0` or `DESIGN_KIT_RE
 ## Use
 
 In a repo: *"lay the design system"*, then *"prototype a checkout"*. The skills say the rest.
+
+## Browse your prototypes
+
+From the repo root: `node design/studio.mjs --open` (copy the scripts into `design/` first; SETUP.md
+step 3 does it). It serves a read-only dashboard on 127.0.0.1: journeys, screens and variants, each
+screen in a frame with state, theme, variant and viewport controls, a flow map drawn from the
+`data-go` links, the shots, and `JOURNEY.md`. It reloads when files change and writes nothing.
+Screens must be plain `.html`, or declare `preview.origin` in `design/design.json` and start that
+preview yourself. Node 18+ or Bun, no dependencies.
 
 ## Source
 

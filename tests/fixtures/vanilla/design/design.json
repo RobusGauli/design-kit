@@ -1,0 +1,9 @@
+{
+  "tokens": "design/tokens.json",
+  "css": "design/tokens.css",
+  "system": ["design/components.css"],
+  "screens": ["design/journeys"],
+  "product": ["src"],
+  "catalogue": "/catalogue.html",
+  "lint": "node design/lint.mjs"
+}

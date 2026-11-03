@@ -1,0 +1,480 @@
+/* The design system: six primitives, in CSS, reading nothing but the generated tokens.
+ *
+ * THIS FILE IS THE LINT'S "INSIDE". A token may be named here and nowhere else; a screen
+ * composes these classes and writes no colour, radius, shadow or font size of its own. When a
+ * screen needs one, a component is missing — build the component.
+ *
+ * EVERY COMPONENT ROOT CARRIES `data-slot`, and the selector is the ATTRIBUTE, not a class.
+ * That is the identity a comment, a shot and a test all use instead of reading markup, and it is
+ * what lets the studio's pick mode say `payment › card › card-footer › button "Pay now"` rather
+ * than a CSS path nobody can read.
+ *
+ * THE FOUR SURFACE STATES are `html[data-state="…"]` rules, because the bridge stamps the state
+ * on <html> before first paint. A screen declares which states it has on its root's
+ * `data-states`; the lint checks the declaration exists and the shots script walks it. */
+
+@import "./tokens.css";
+
+/* THE COMPONENTS ARE IN A LAYER AND THE STATE RULES ARE NOT. An unlayered rule beats every
+ * layered one whatever its weight, so `[data-when] { display: none }` cannot lose to a slot's own
+ * `display`, and `revert-layer` hands a revealed branch back that display (the lint's
+ * `state-rule-loses`). */
+@layer components {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-base-size);
+    line-height: var(--ds-text-base-leading);
+    letter-spacing: var(--ds-track-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-focus);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: a person who asked their OS to stop
+       animations is not asking politely; every component's own transition has to lose, and
+       there is no other way in CSS to say that.  design-lint-ok */
+      animation: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: as above.  design-lint-ok */
+      transition: none !important;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    /* The visually-hidden idiom is a fixed recipe, not a spacing decision: a token here would be
+     a token whose only correct value is -1px.  design-lint-ok */
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------- layout */
+
+  [data-slot="page"] {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  [data-slot="stack"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    min-width: 0;
+  }
+
+  [data-slot="row"] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    min-width: 0;
+  }
+
+  [data-slot="row"][data-justify="end"] {
+    justify-content: flex-end;
+  }
+
+  [data-slot="row"][data-justify="between"] {
+    justify-content: space-between;
+  }
+
+  [data-slot="heading"] {
+    margin: 0;
+    font-size: var(--ds-text-xl-size);
+    line-height: var(--ds-text-xl-leading);
+    letter-spacing: var(--ds-track-head);
+    font-weight: 700;
+  }
+
+  [data-slot="heading"][data-size="card"] {
+    font-size: var(--ds-text-md-size);
+    line-height: var(--ds-text-md-leading);
+    font-weight: 500;
+  }
+
+  [data-slot="text"] {
+    margin: 0;
+    min-width: 0;
+  }
+
+  [data-slot="text"][data-tone="muted"] {
+    color: var(--ds-color-muted);
+  }
+
+  [data-slot="text"][data-tone="quiet"] {
+    color: var(--ds-color-quiet);
+  }
+
+  [data-slot="text"][data-size="sm"] {
+    font-size: var(--ds-text-sm-size);
+    line-height: var(--ds-text-sm-leading);
+  }
+
+  [data-slot="text"][data-size="xs"] {
+    font-size: var(--ds-text-xs-size);
+    line-height: var(--ds-text-xs-leading);
+  }
+
+  /* ---------------------------------------------------------------- button */
+
+  [data-slot="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-2);
+    height: var(--ds-space-12);
+    padding: 0 var(--ds-space-5);
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-color-accent);
+    color: var(--ds-color-accent-fg);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-sm-size);
+    font-weight: 500;
+    letter-spacing: var(--ds-track-ui);
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color var(--ds-motion-fast) var(--ds-motion-easing),
+      box-shadow var(--ds-motion-fast) var(--ds-motion-easing),
+      translate var(--ds-motion-fast) var(--ds-motion-easing);
+  }
+
+  [data-slot="button"]:hover {
+    translate: 0 -1px;
+    box-shadow: var(--ds-shadow-2);
+  }
+
+  [data-slot="button"]:active {
+    translate: 0 1px;
+    box-shadow: none;
+  }
+
+  [data-slot="button"][data-variant="secondary"] {
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    box-shadow: var(--ds-shadow-hairline-strong);
+  }
+
+  [data-slot="button"][data-variant="ghost"] {
+    background: none;
+    color: var(--ds-color-muted);
+    box-shadow: none;
+  }
+
+  [data-slot="button"][data-variant="ghost"]:hover {
+    background: var(--ds-primitive-gray-200);
+    color: var(--ds-color-fg);
+  }
+
+  [data-slot="button"][data-size="sm"] {
+    height: var(--ds-space-8);
+    padding: 0 var(--ds-space-4);
+    font-size: var(--ds-text-xs-size);
+  }
+
+  [data-slot="button"]:disabled,
+  [data-slot="button"][aria-disabled="true"] {
+    pointer-events: none;
+    translate: 0 0;
+    cursor: not-allowed;
+    background: var(--ds-color-surface-2);
+    color: var(--ds-color-quiet);
+    box-shadow: var(--ds-shadow-hairline);
+  }
+
+  /* ---------------------------------------------------------------- field + input */
+
+  [data-slot="field"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 26rem;
+  }
+
+  [data-slot="field-label"] {
+    font-size: var(--ds-text-sm-size);
+    line-height: var(--ds-text-sm-leading);
+    font-weight: 500;
+    color: var(--ds-primitive-gray-800);
+  }
+
+  [data-slot="field-hint"] {
+    margin: 0;
+    font-size: var(--ds-text-xs-size);
+    line-height: var(--ds-text-xs-leading);
+    color: var(--ds-color-muted);
+  }
+
+  [data-slot="field-error"] {
+    margin: 0;
+    font-size: var(--ds-text-xs-size);
+    line-height: var(--ds-text-xs-leading);
+    font-weight: 500;
+    color: var(--ds-color-danger-fg);
+  }
+
+  [data-slot="input"] {
+    height: var(--ds-space-12);
+    width: 100%;
+    padding: 0 var(--ds-space-4);
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-color-surface-2);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-sm-size);
+    letter-spacing: var(--ds-track-ui);
+    box-shadow: var(--ds-shadow-hairline-soft);
+    transition:
+      background-color var(--ds-motion-fast) var(--ds-motion-easing),
+      box-shadow var(--ds-motion-fast) var(--ds-motion-easing);
+  }
+
+  [data-slot="input"]::placeholder {
+    color: var(--ds-color-muted);
+  }
+
+  [data-slot="input"]:hover {
+    background: var(--ds-primitive-gray-200);
+  }
+
+  [data-slot="input"][aria-invalid="true"] {
+    box-shadow: inset 0 0 0 1.5px var(--ds-color-danger-strong);
+  }
+
+  /* ---------------------------------------------------------------- card */
+
+  [data-slot="card"] {
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    box-shadow: var(--ds-shadow-edge-raised);
+  }
+
+  [data-slot="card"][data-surface="flat"] {
+    box-shadow: var(--ds-shadow-hairline);
+  }
+
+  [data-slot="card"][data-surface="interactive"] {
+    cursor: pointer;
+    transition:
+      box-shadow var(--ds-motion-fast) var(--ds-motion-easing),
+      translate var(--ds-motion-fast) var(--ds-motion-easing);
+  }
+
+  [data-slot="card"][data-surface="interactive"]:hover {
+    translate: 0 -1px;
+    box-shadow: var(--ds-shadow-2);
+  }
+
+  [data-slot="card-header"] {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--ds-space-4);
+  }
+
+  [data-slot="card-title"] {
+    margin: 0 0 var(--ds-space-1);
+    font-size: var(--ds-text-md-size);
+    line-height: var(--ds-text-md-leading);
+    letter-spacing: var(--ds-track-head);
+    font-weight: 500;
+  }
+
+  [data-slot="card-description"] {
+    margin: 0;
+    font-size: var(--ds-text-sm-size);
+    line-height: var(--ds-text-base-leading);
+    color: var(--ds-color-muted);
+  }
+
+  [data-slot="card-footer"] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-5);
+  }
+
+  /* ---------------------------------------------------------------- badge */
+
+  /* COLOUR IS NEVER THE ONLY SIGNAL: a badge always carries a word, and the dot is a second mark
+   rather than the only one. */
+  [data-slot="badge"] {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-xs-size);
+    line-height: var(--ds-text-xs-leading);
+    font-weight: 500;
+    letter-spacing: var(--ds-track-none);
+    color: var(--ds-primitive-gray-700);
+    box-shadow: var(--ds-shadow-hairline);
+  }
+
+  [data-slot="badge-dot"] {
+    width: var(--ds-space-2);
+    height: var(--ds-space-2);
+    flex-shrink: 0;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-primitive-gray-400);
+  }
+
+  [data-slot="badge"][data-tone="danger"] {
+    background: var(--ds-color-danger);
+    color: var(--ds-color-danger-fg);
+    box-shadow: none;
+  }
+
+  [data-slot="badge"][data-tone="danger"] [data-slot="badge-dot"] {
+    background: var(--ds-color-danger-strong);
+  }
+
+  [data-slot="badge"][data-tone="success"] {
+    background: var(--ds-color-success);
+    color: var(--ds-color-success-fg);
+    box-shadow: none;
+  }
+
+  [data-slot="badge"][data-tone="success"] [data-slot="badge-dot"] {
+    background: var(--ds-color-success-strong);
+  }
+
+  [data-slot="badge"][data-tone="warn"] {
+    background: var(--ds-color-warn);
+    color: var(--ds-color-warn-fg);
+    box-shadow: none;
+  }
+
+  [data-slot="badge"][data-tone="warn"] [data-slot="badge-dot"] {
+    background: var(--ds-color-warn-strong);
+  }
+
+  /* ---------------------------------------------------------------- empty */
+
+  [data-slot="empty"] {
+    display: grid;
+    place-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    text-align: center;
+    box-shadow: var(--ds-shadow-hairline-soft);
+  }
+
+  [data-slot="empty-title"] {
+    margin: var(--ds-space-1) 0 0;
+    font-size: var(--ds-text-base-size);
+    line-height: var(--ds-text-md-leading);
+    font-weight: 500;
+  }
+
+  [data-slot="empty-description"] {
+    margin: 0;
+    max-width: 38ch;
+    font-size: var(--ds-text-sm-size);
+    line-height: var(--ds-text-base-leading);
+    color: var(--ds-color-muted);
+  }
+
+  /* ---------------------------------------------------------------- skeleton */
+
+  [data-slot="skeleton"] {
+    display: block;
+    height: var(--ds-space-8);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-primitive-gray-200);
+    background-image: linear-gradient(
+      100deg,
+      var(--ds-primitive-gray-200) 40%,
+      var(--ds-primitive-gray-100) 50%,
+      var(--ds-primitive-gray-200) 60%
+    );
+    background-size: 200% 100%;
+    color: transparent;
+    user-select: none;
+    animation: ds-shimmer 1.4s linear infinite;
+  }
+
+  [data-slot="skeleton"][data-shape="card"] {
+    height: var(--ds-space-12);
+    border-radius: var(--ds-radius-lg);
+  }
+
+  @keyframes ds-shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- the four surface states */
+
+/* A SURFACE STATE IS A ROOT ATTRIBUTE, and every screen shows exactly one branch. The bridge
+   stamps `data-state` from `?state=` before first paint, so there is no flash and no script. */
+[data-when] {
+  display: none;
+}
+
+html[data-state="empty"] [data-when~="empty"],
+html[data-state="loading"] [data-when~="loading"],
+html[data-state="error"] [data-when~="error"],
+html[data-state="ready"] [data-when~="ready"] {
+  display: revert-layer;
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- the catalogue's own chrome */
+
+  [data-slot="catalogue"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-8);
+  }
+
+  [data-slot="catalogue-section"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+
+  [data-slot="catalogue-row"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--ds-space-4);
+  }
+}

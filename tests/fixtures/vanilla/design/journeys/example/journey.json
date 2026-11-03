@@ -1,0 +1,9 @@
+{
+  "title": "Example: pick an item, look at it, finish",
+  "entry": "list",
+  "screens": {
+    "list": { "title": "The list" },
+    "detail": { "title": "One item" },
+    "done": { "title": "Done" }
+  }
+}

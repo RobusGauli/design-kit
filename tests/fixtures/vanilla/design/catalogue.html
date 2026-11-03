@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>catalogue: every component, every state, both themes</title>
+    <!-- The bridge stamps `?theme=` on <html> before first paint, so a screenshot never catches
+         a flash of the other theme. `?theme=dark` is the only door; nothing is remembered, because
+         a design review that starts in whatever theme the last reader left it in is a review of
+         the wrong screen. -->
+    <script src="./studio-bridge.js"></script>
+    <link rel="stylesheet" href="./components.css" />
+  </head>
+  <body>
+    <div data-slot="catalogue">
+      <header data-slot="stack">
+        <h1 data-slot="heading">Catalogue</h1>
+        <p data-slot="text" data-tone="muted">
+          Six components, every state, both themes. This page IS the documentation: there is no
+          Storybook and no generated prop table. Append <code>?theme=dark</code> to see the other
+          half. <a href="./index.html">Back to the journeys</a>.
+        </p>
+      </header>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">01 · Button</h2>
+        <div data-slot="catalogue-row">
+          <button data-slot="button" type="button">Primary</button>
+          <button data-slot="button" data-variant="secondary" type="button">Secondary</button>
+          <button data-slot="button" data-variant="ghost" type="button">Ghost</button>
+          <button data-slot="button" data-size="sm" type="button">Small</button>
+          <button data-slot="button" disabled type="button">Disabled</button>
+        </div>
+      </section>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">02 · Field and Input</h2>
+        <div data-slot="catalogue-row">
+          <div data-slot="field">
+            <label data-slot="field-label" for="cat-a">Coupon code</label>
+            <input data-slot="input" id="cat-a" placeholder="e.g. WELCOME10" />
+            <p data-slot="field-hint">Case-insensitive.</p>
+          </div>
+          <div data-slot="field">
+            <label data-slot="field-label" for="cat-b">Coupon code</label>
+            <input aria-invalid="true" data-slot="input" id="cat-b" value="SPRING24" />
+            <p data-slot="field-error">That code has expired.</p>
+          </div>
+        </div>
+      </section>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">03 · Card</h2>
+        <div data-slot="catalogue-row">
+          <div data-slot="card">
+            <div data-slot="card-header">
+              <h3 data-slot="card-title">Raised</h3>
+              <p data-slot="card-description">The default surface, one step above the page.</p>
+            </div>
+            <div data-slot="card-footer">
+              <button data-slot="button" data-variant="ghost" type="button">Back</button>
+              <button data-slot="button" type="button">Apply</button>
+            </div>
+          </div>
+          <div data-slot="card" data-surface="flat">
+            <div data-slot="card-header">
+              <h3 data-slot="card-title">Flat</h3>
+              <p data-slot="card-description">A hairline instead of a shadow.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">04 · Badge</h2>
+        <div data-slot="catalogue-row">
+          <span data-slot="badge"><span data-slot="badge-dot"></span>neutral</span>
+          <span data-slot="badge" data-tone="success"><span data-slot="badge-dot"></span>proved</span>
+          <span data-slot="badge" data-tone="warn"><span data-slot="badge-dot"></span>waiting on you</span>
+          <span data-slot="badge" data-tone="danger"><span data-slot="badge-dot"></span>refused</span>
+        </div>
+      </section>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">05 · Empty</h2>
+        <div data-slot="catalogue-row">
+          <div data-slot="empty">
+            <h4 data-slot="empty-title">No coupons on this account</h4>
+            <p data-slot="empty-description">Codes arrive by email after your first order.</p>
+            <button data-slot="button" data-size="sm" type="button">Add one</button>
+          </div>
+        </div>
+      </section>
+
+      <section data-slot="catalogue-section">
+        <h2 data-slot="heading" data-size="card">06 · Skeleton</h2>
+        <div data-slot="stack">
+          <span data-slot="skeleton"></span>
+          <span data-slot="skeleton" data-shape="card"></span>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
