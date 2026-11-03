@@ -1,60 +1,57 @@
 # Set up design-kit
 
 You are a coding agent (Claude Code, Codex, Cursor, Kiro, ...) and the user asked you to set up
-design-kit from this file. Do these steps in order. Report each command's output.
+design-kit from this file. It installs into **the repo the user is in**, not their home directory.
+Do these steps in order and report each command's output.
 
-## 1. Install the two skills
+## 1. Find the repo
 
-macOS and Linux:
+Run `git rev-parse --show-toplevel`. If it prints a path, that is the repo: `cd` to it. If it fails,
+ask the user which project directory to set up, and stop until they answer. Never run the
+installer in the home directory (it refuses).
+
+## 2. Install into the repo
+
+From the repo root, on macOS and Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.sh | sh
 ```
 
-Windows, in PowerShell (from Git Bash, wrap it in `powershell -NoProfile -Command "..."`):
+On Windows, in PowerShell (from Git Bash, wrap it in `powershell -NoProfile -Command "..."`):
 
 ```powershell
 irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | iex
 ```
 
-The installer copies `design-system` and `prototype` to `~/.local/share/design-kit/skills/`
-(`%LOCALAPPDATA%\design-kit\skills\` on Windows) and links them into the skill folders of Claude
-Code, Codex, Cursor and Kiro. It does not touch any repo. Its output ends with `done.`. If that
-line is missing, the install failed: show the user the output and stop.
+Everything it writes is inside the repo:
 
-Remember the path on its `skills:` line. Call it `$S` below.
-
-## 2. Check the runtime
-
-The design scripts need Node 18+ or Bun. Run `node --version` and `bun --version`. If neither
-works, tell the user, and continue: the skills still install.
-
-## 3. Prepare the current repo (only if the user is in one)
-
-If the current directory is a git repo the user wants to design in, ask once: *Add design-kit's
-`design/` starter files to this repo?* On yes, copy these files, and **never overwrite one
-that exists** (say which you skipped):
-
-| from | to |
+| path | what |
 |---|---|
-| `$S/design-system/assets/DESIGN.md` | `design/DESIGN.md` |
-| `$S/design-system/assets/studio-bridge.js` | `design/studio-bridge.js` |
-| `$S/design-system/scripts/*.mjs` (each one) | `design/<name>.mjs` |
+| `.agents/skills/design-system/`, `.agents/skills/prototype/` | the two skills |
+| `.claude/skills/`, `.kiro/skills/`, `.cursor/rules/design.mdc`, `AGENTS.md` | pointers so each agent finds them |
+| `design/DESIGN.md` | the brief, a stub of questions (never overwritten) |
+| `design/studio-bridge.js`, `design/*.mjs` | the prototype runtime and the scripts |
+| `design/.shots/.gitignore` | keeps screenshots out of git |
 
-For a script that already exists, compare it with the skill's copy. If it differs, leave it and tell
-the user which one differs; do not overwrite it.
+It never deletes a file. A file that exists and differs is refreshed only when it is design-kit's
+own; `design/DESIGN.md` is kept, and `AGENTS.md` gets one paragraph appended once. Its output
+ends with `done.`. If that line is missing, the install failed: show the user the output and stop.
 
-Do not lay tokens or write components now. That is the design-system skill's work, and it starts
-by looking at the repo's stack.
+## 3. Check the runtime
+
+The design scripts need Node 18+ or Bun. If the installer printed a `warning:` about it, tell the
+user.
 
 ## 4. Tell the user what they can say
 
-End with these lines, and nothing that needs a reply:
+Say that the files are new in the repo and are meant to be committed. Then end with these lines,
+and nothing that needs a reply:
 
 - *"Lay the design system in this repo"* → the `design-system` skill (tokens, type and space
   scales, contrast, states, the component floor, a catalogue and a lint, in the repo's own stack).
 - *"Prototype a checkout"* → the `prototype` skill (a clickable journey in
   `design/journeys/<name>/`).
-- *"Show me the prototypes"* → run `node design/studio.mjs --open` from the repo root: a read-only
-  dashboard (screens, flow map, shots, brief) on 127.0.0.1. Print the URL it prints.
-- To update later, run the same installer again.
+- *"Show me the prototypes"* → `node design/studio.mjs --open`: a read-only dashboard (screens,
+  flow map, shots, brief) on 127.0.0.1.
+- To update later, run the same installer again from the repo root.

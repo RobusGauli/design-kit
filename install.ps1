@@ -1,21 +1,48 @@
-# design-kit installer for Windows (PowerShell 5.1+).
+# design-kit installer for Windows (PowerShell 5.1+): writes the skills INTO A REPO.
 #
-#   irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | iex
+#   cd <your repo>; irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | iex
 #
-# Same contract as install.sh: copies skills/design-system and skills/prototype of the latest
-# release to %LOCALAPPDATA%\design-kit\skills\, then links each into ~\.claude\skills and
-# ~\.agents\skills (and ~\.cursor\skills, ~\.kiro\skills when present) as directory junctions,
-# so no admin rights are needed. Never replaces a file or link it did not create.
-# Pin a version with $env:DESIGN_KIT_REF = "v0.1.0". Output ends with `done.`.
+# Same layout and the same per-file rule as install.sh (read it for the whole contract):
+#   missing -> written · identical -> skipped · ours, differs -> refreshed · yours, differs -> kept
+# Never deletes anything, never writes outside the repo. Output ends with `done.`.
+# Pin a version with $env:DESIGN_KIT_REF = "v0.2.0"; $env:DESIGN_KIT_DIR picks the repo.
 
 & {
   $ErrorActionPreference = "Stop"
   $Repo = "RobusGauli/design-kit"
-  $Skills = @("design-system", "prototype")
-  $Data = Join-Path $env:LOCALAPPDATA "design-kit"
-  $SkillsDir = Join-Path $Data "skills"
-  New-Item -ItemType Directory -Force -Path $SkillsDir | Out-Null
-  $Stage = Join-Path $Data (".stage." + [guid]::NewGuid().ToString("N").Substring(0, 8))
+  $Dest = (Resolve-Path ($(if ($env:DESIGN_KIT_DIR) { $env:DESIGN_KIT_DIR } else { "." }))).Path.TrimEnd('\', '/')
+  if ($Dest -eq $HOME.TrimEnd('\', '/') -or $Dest -match '^[A-Za-z]:$' -or $Dest -eq '') {
+    throw "$Dest is not a project. cd into the repo you want to design in, then run this again."
+  }
+  & git -C $Dest rev-parse --is-inside-work-tree *> $null
+  if ($LASTEXITCODE -ne 0) { Write-Output "warning:   $Dest is not a git repo; writing anyway" }
+
+  function Inside([string]$Rel) {
+    # Never write through a link out of the repo: resolve every existing folder on the way.
+    $at = $Dest
+    foreach ($part in $Rel.Split('/')) {
+      $at = Join-Path $at $part
+      $item = Get-Item -LiteralPath $at -Force -ErrorAction SilentlyContinue
+      if ($item -and $item.LinkType) { throw "$Rel leads through a link ($at); refusing to write through it" }
+    }
+  }
+  function Put([string]$Owner, [string]$From, [string]$Rel) {
+    Inside $Rel
+    $to = Join-Path $Dest $Rel
+    if (-not (Test-Path -LiteralPath $to)) {
+      New-Item -ItemType Directory -Force -Path (Split-Path $to) | Out-Null
+      Copy-Item -LiteralPath $From $to
+      Write-Output "wrote:     $Rel"
+    } elseif ((Get-FileHash -LiteralPath $From).Hash -eq (Get-FileHash -LiteralPath $to).Hash) {
+    } elseif ($Owner -eq "ours") {
+      Copy-Item -LiteralPath $From $to -Force
+      Write-Output "refreshed: $Rel"
+    } else {
+      Write-Output "kept:      $Rel (yours; left as it is)"
+    }
+  }
+
+  $Stage = Join-Path ([IO.Path]::GetTempPath()) ("design-kit." + [guid]::NewGuid().ToString("N").Substring(0, 8))
   New-Item -ItemType Directory -Path $Stage | Out-Null
   try {
     if ($env:DESIGN_KIT_SOURCE) {
@@ -35,43 +62,47 @@
       $Src = (Get-ChildItem (Join-Path $Stage "src") -Directory | Select-Object -First 1).FullName
       $Source = "$Repo@$Ref"
     }
-    foreach ($s in $Skills) {
-      if (-not (Test-Path (Join-Path $Src "skills\$s\SKILL.md"))) { throw "$Src has no skills\$s\SKILL.md." }
+    foreach ($f in @("skills\design-system\SKILL.md", "skills\prototype\SKILL.md", "template\AGENTS.md")) {
+      if (-not (Test-Path (Join-Path $Src $f))) { throw "$Source has no $f." }
     }
     $Version = "unknown"
     if (Test-Path (Join-Path $Src "VERSION")) { $Version = (Get-Content (Join-Path $Src "VERSION") -Raw).Trim() }
 
-    foreach ($s in $Skills) {
-      $dest = Join-Path $SkillsDir $s
-      if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
-      Copy-Item -Recurse (Join-Path $Src "skills\$s") $dest
-      Write-Output "installed: $dest"
+    foreach ($p in @(".agents/skills", ".claude/skills", ".kiro/skills", ".cursor/rules", "design/.shots", "AGENTS.md")) { Inside $p }
+    function Rel([string]$Root, [string]$Full) { $Full.Substring($Root.Length + 1).Replace('\', '/') }
+    $skills = Join-Path $Src "skills"
+    foreach ($s in @("design-system", "prototype")) {
+      Get-ChildItem -Recurse -File (Join-Path $skills $s) | Where-Object { $_.Name -ne ".DS_Store" } |
+        Sort-Object FullName | ForEach-Object { Put "ours" $_.FullName (".agents/skills/" + (Rel $skills $_.FullName)) }
     }
-    @{ version = $Version; source = $Source; installed_at = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") } |
-      ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $Data "install.json")
+    $tpl = Join-Path $Src "template"
+    foreach ($d in @(".claude", ".kiro", ".cursor")) {
+      Get-ChildItem -Recurse -File -Force (Join-Path $tpl $d) | Sort-Object FullName |
+        ForEach-Object { Put "ours" $_.FullName (Rel $tpl $_.FullName) }
+    }
+    Put "ours" (Join-Path $skills "design-system\assets\studio-bridge.js") "design/studio-bridge.js"
+    Get-ChildItem -File (Join-Path $skills "design-system\scripts") -Filter *.mjs | Sort-Object Name |
+      ForEach-Object { Put "ours" $_.FullName ("design/" + $_.Name) }
+    Put "yours" (Join-Path $skills "design-system\assets\DESIGN.md") "design/DESIGN.md"
 
-    $roots = @("$HOME\.claude\skills", "$HOME\.agents\skills")
-    if (Test-Path "$HOME\.cursor") { $roots += "$HOME\.cursor\skills" }
-    if (Test-Path "$HOME\.kiro") { $roots += "$HOME\.kiro\skills" }
-    foreach ($s in $Skills) {
-      $target = Join-Path $SkillsDir $s
-      foreach ($r in $roots) {
-        $p = Join-Path $r $s
-        $item = Get-Item $p -Force -ErrorAction SilentlyContinue
-        if ($item -and $item.LinkType -and ("$($item.Target)" -like "*\design-kit\skills\*")) {
-          $item.Delete()
-        } elseif ($item) {
-          Write-Output "skipped:   $p (already exists and is not design-kit's; left it alone)"; continue
-        }
-        New-Item -ItemType Directory -Force -Path $r | Out-Null
-        New-Item -ItemType Junction -Path $p -Target $target | Out-Null
-        Write-Output "linked:    $p"
-      }
+    Inside "AGENTS.md"; Inside "design/.shots/.gitignore"
+    $agentsFrom = Join-Path $tpl "AGENTS.md"; $agents = Join-Path $Dest "AGENTS.md"
+    if (-not (Test-Path -LiteralPath $agents)) {
+      Copy-Item -LiteralPath $agentsFrom $agents; Write-Output "wrote:     AGENTS.md"
+    } elseif ((Get-Content -LiteralPath $agents) -notcontains (Get-Content -LiteralPath $agentsFrom -TotalCount 1)) {
+      Add-Content -LiteralPath $agents -Value ("`n" + (Get-Content -LiteralPath $agentsFrom -Raw)) -NoNewline
+      Write-Output "appended:  AGENTS.md"
+    }
+    $ignore = Join-Path $Dest "design/.shots/.gitignore"
+    if (-not (Test-Path -LiteralPath $ignore)) {
+      New-Item -ItemType Directory -Force -Path (Join-Path $Dest "design/.shots") | Out-Null
+      [IO.File]::WriteAllText($ignore, "*`n")
+      Write-Output "wrote:     design/.shots/.gitignore"
     }
     if (-not (Get-Command node -ErrorAction SilentlyContinue) -and -not (Get-Command bun -ErrorAction SilentlyContinue)) {
       Write-Output "warning:   neither node (18+) nor bun is on PATH; the design scripts need one of them."
     }
-    Write-Output "skills:    $SkillsDir"
+    Write-Output "repo:      $Dest"
     Write-Output "version:   $Version"
     Write-Output "source:    $Source"
     Write-Output "done."

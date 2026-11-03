@@ -1,17 +1,17 @@
 # Rounds — the designer's feedback, and how to answer it
 
-A round is one file, numbered — `.harbor/reviews/journey/<name>/round-<n>.md`, **the round file
-the turn names**, by its absolute path. It lives under `.harbor/reviews/`, which git ignores: the
+A round is one file, numbered `round-<n>.md`, written by the review tool the designer uses:
+**the round file the turn names**, by its absolute path. Read it where the turn says it is. The
 journey is the product and goes into git; a round is the designer and you iterating on it, and
 never does. Commit the screens you change; never commit the round file, and never a picture
-(`.harbor/shots/<name>/` is Harbor's, git-ignored).
+(`design/.shots/<name>/` is git-ignored).
 
 ## The turn that brings it
 
-When the designer sends a round from the studio, ONE turn arrives in the conversation, in these
+When the designer sends a round, ONE turn arrives in the conversation, in these
 words (the number, the journey and the path change; nothing else does):
 
-> Answer review round 2 of checkout: read `/abs/path/.harbor/reviews/journey/checkout/round-2.md`
+> Answer review round 2 of checkout: read `/abs/path/to/round-2.md`
 > and follow its header. Revise only the documents it names. Tick each item with one line after
 > the arrow; where you did not change something, leave the box open and say why after the arrow.
 > Commit the documents you revised; the round file is ignored by git and stays uncommitted. Never
@@ -24,7 +24,7 @@ That turn IS the round: read the file it names and answer it below. A later turn
 
 ```markdown
 # Review round 2 — checkout — 2026-09-16
-Sent from Harbor. For each item: change what it asks, then tick it — `[ ]` → `[x]` — and write
+For each item: change what it asks, then tick it — `[ ]` → `[x]` — and write
 one line after an arrow on the same line saying what you changed. Where you did not change it,
 leave the box open and say why after the arrow. Revise only the documents named here and commit
 them; this file is ignored by git and is never committed. Never approve or sign anything.
@@ -46,7 +46,7 @@ paths it covers. The `selector` is for your grep; the path is what the human mea
 re-shoot exactly as you would a pin.
 
 An item the designer made by shaping the screen by hand points at a REFERENCE beside the round,
-`.harbor/reviews/journey/<name>/round-<n>/intent/` — a picture of what they meant, never source to
+`round-<n>/intent/` in the round file's own folder — a picture of what they meant, never source to
 paste; its own words say so.
 
 ## How to answer it

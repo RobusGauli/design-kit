@@ -36,6 +36,7 @@
  * The PNG is decoded with `node:zlib`, which is a builtin — this file still takes no dependency.
  */
 
+import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -259,15 +260,15 @@ export function pngInk(buf) {
   return { ink: differ / (head.width * head.height), why: "" };
 }
 
-/** Every picture Harbor (or `shots.mjs`) took of a journey the config's screen roots hold —
- *  `.harbor/shots/<journey>/*.png`, git-ignored: the pictures are Harbor's, never committed. */
+/** Every picture `shots.mjs` took of a journey the config's screen roots hold —
+ *  `design/.shots/<journey>/*.png`, git-ignored: pictures are evidence, never committed. */
 export function shotFiles(config, cwd) {
   const out = [];
   for (const base of config.screens ?? []) {
     const dir = isAbsolute(base) ? base : join(cwd, base);
     if (!existsSync(dir)) continue;
     for (const name of readdirSync(dir).sort()) {
-      const shots = join(cwd, ".harbor", "shots", name);
+      const shots = join(cwd, "design", ".shots", name);
       if (!statSync(join(dir, name)).isDirectory()) continue;
       if (!existsSync(shots) || !statSync(shots).isDirectory()) continue;
       for (const file of readdirSync(shots).sort()) {
@@ -287,6 +288,10 @@ export function shotFiles(config, cwd) {
 export function shotsCheck(config, cwd) {
   const files = shotFiles(config, cwd);
   if (files.length === 0) {
+    if (process.env.HARBOR_DESIGN_SHOTS === "1") {
+      console.log("shots SKIP — this environment takes the pictures itself");
+      return -1;
+    }
     console.log("shots SKIP — none taken (run `bun design/shots.mjs <journey>`)");
     return -1;
   }
@@ -437,4 +442,6 @@ export function run(argv, cwd = process.cwd()) {
   return failed === 0 ? 0 : 1;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(run(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(run(process.argv.slice(2)));

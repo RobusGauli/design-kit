@@ -26,6 +26,7 @@
  *
  * Every offence is one line: `<path>:<line>  <rule>  <what was found>`. */
 
+import { pathToFileURL } from "node:url";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { declarations, flatten } from "./tokens-to-css.mjs";
@@ -465,4 +466,6 @@ export function run(argv, cwd = process.cwd()) {
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(run(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(run(process.argv.slice(2)));

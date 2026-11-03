@@ -106,7 +106,7 @@ mechanical half of them.
 ## 5. The scripts — deterministic work is a script, never prose
 
 All six are zero-dependency and run under Node 18+ or Bun. Copy them from this skill's `scripts/` to `design/` and
-run them from the repo root. Never edit a copy: re-copying them (or `harbor design init`) brings
+run them from the repo root. Never edit a copy: re-running the design-kit installer brings
 the copies under `design/` up to the skill's bytes, and never touches `DESIGN.md`, `design.json` or
 a journey.
 

@@ -75,13 +75,11 @@
  *   node design/shots.mjs checkout --all        every shot, even the ones nothing touched
  *   node design/shots.mjs checkout --width 1440 --height 900
  *
- * INSIDE HARBOR, HARBOR TAKES THE PICTURES. Measured 2026-10-05 under the agent's sandbox as
- * Harbor sets it: `listen` is EPERM, loopback is refused, and no browser launches at all — the
- * old run hung for minutes. Harbor sets `HARBOR_DESIGN_SHOTS=1` for such a conversation and shoots
- * each journey itself as its screens change; this script says so in one line and exits 0. Anywhere
+ * With HARBOR_DESIGN_SHOTS=1 the host takes the pictures, and this says so and exits 0. Anywhere
  * else a door that cannot open FAILS FAST, in one sentence, and never hangs.
  */
 
+import { pathToFileURL } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -609,10 +607,10 @@ export async function preview(config, designDir, root) {
 }
 
 export async function run(argv, cwd = process.cwd()) {
+  /* A host that photographs the screens itself (Harbor's studio does) sets this, and its sandbox
+     can neither open a port nor launch a browser: stand down at once instead of probing for 20 s. */
   if (process.env.HARBOR_DESIGN_SHOTS === "1") {
-    console.log(
-      "Harbor takes this journey's pictures itself as its screens change — nothing to run here.",
-    );
+    console.log("This environment takes the pictures itself as the screens change — nothing to run here.");
     return 0;
   }
   const named = flag(argv, "config") ?? "design/design.json";
@@ -672,11 +670,11 @@ export async function run(argv, cwd = process.cwd()) {
         const journey = join(dir, name);
         if (!statSync(journey).isDirectory()) continue;
         if (!existsSync(join(journey, "journey.json"))) continue;
-        /* HARBOR'S PICTURES LIVE OUTSIDE THE JOURNEY, git-ignored: `.harbor/shots/<journey>/`.
+        /* THE PICTURES LIVE OUTSIDE THE JOURNEY, git-ignored: `design/.shots/<journey>/`.
            The `.gitignore` goes first, so no picture is ever a file git sees. */
-        const shotsDir = join(root, ".harbor", "shots", name);
+        const shotsDir = join(root, "design", ".shots", name);
         mkdirSync(shotsDir, { recursive: true });
-        const ignore = join(root, ".harbor", "shots", ".gitignore");
+        const ignore = join(root, "design", ".shots", ".gitignore");
         if (!existsSync(ignore)) writeFileSync(ignore, "*\n");
         const ledger = all ? {} : readLedger(shotsDir);
         const next = { ...ledger };
@@ -763,4 +761,6 @@ export async function run(argv, cwd = process.cwd()) {
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(await run(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(await run(process.argv.slice(2)));

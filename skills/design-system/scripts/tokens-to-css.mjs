@@ -36,6 +36,7 @@
  * and a generated file that a formatter is allowed to touch must not fail for having been
  * formatted. What it may never do is drift in a value. */
 
+import { pathToFileURL } from "node:url";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 
@@ -230,4 +231,6 @@ export function main(argv, cwd = process.cwd()) {
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(main(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(main(process.argv.slice(2)));

@@ -32,9 +32,9 @@ function get(server, path, headers = {}, method = "GET") {
 async function repo() {
   const root = await mkdtemp(join(tmpdir(), "studio-"));
   await cp(join(here, "fixtures", "vanilla"), root, { recursive: true });
-  await mkdir(join(root, ".harbor", "shots", "example"), { recursive: true });
-  await writeFile(join(root, ".harbor", "shots", "example", "list.ready.light.png"), PNG);
-  await writeFile(join(root, ".harbor", "shots", "example", ".digests.json"), "{}");
+  await mkdir(join(root, "design", ".shots", "example"), { recursive: true });
+  await writeFile(join(root, "design", ".shots", "example", "list.ready.light.png"), PNG);
+  await writeFile(join(root, "design", ".shots", "example", ".digests.json"), "{}");
   await writeFile(join(root, "outside.txt"), "secret");
   await symlink(join(root, "outside.txt"), join(root, "design", "leak.txt"));
   return root;
@@ -76,7 +76,7 @@ describe("studio.mjs", () => {
     assert.equal((await get(server, "/_studio/shots/example/list.ready.light.png/../../x")).status, 400);
   });
 
-  for (const path of ["/../../etc/passwd", "/%2e%2e/%2e%2e/etc/passwd", "/journeys/%2e%2e/%2e%2e/x", "/journeys/..%2f..%2fx", "/%00", "/.harbor/shots/example/list.ready.light.png"]) {
+  for (const path of ["/../../etc/passwd", "/%2e%2e/%2e%2e/etc/passwd", "/journeys/%2e%2e/%2e%2e/x", "/journeys/..%2f..%2fx", "/%00", "/.shots/example/list.ready.light.png"]) {
     test(`refuses ${path}`, async () => {
       const res = await get(server, path);
       assert.ok([400, 404].includes(res.status), `got ${res.status}`);
@@ -172,6 +172,24 @@ describe("studio.mjs", () => {
     for (let waited = 0; !seen.includes('"kind":"design"') && waited < 8000; waited += 100) await sleep(100);
     req.destroy();
     assert.match(seen, /data: \{"kind":"design"/);
+  });
+
+  test("a new shot is a shots event, never a design one (no frame reload)", async () => {
+    const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
+    let seen = "";
+    const req = http.get({ host: "127.0.0.1", port: server.port, path: "/_studio/events", headers: { host: `127.0.0.1:${server.port}` } }, (res) => {
+      res.setEncoding("utf8");
+      res.on("data", (chunk) => (seen += chunk));
+    });
+    req.on("error", () => {});
+    await sleep(800);
+    seen = "";
+    await writeFile(join(root, "design", ".shots", "example", "done.ready.dark.png"), PNG);
+    for (let waited = 0; !seen.includes('"kind":"shots"') && waited < 8000; waited += 100) await sleep(100);
+    await sleep(400);
+    req.destroy();
+    assert.match(seen, /"kind":"shots"/);
+    assert.doesNotMatch(seen, /"kind":"design"/);
   });
 });
 

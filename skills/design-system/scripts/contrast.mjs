@@ -18,6 +18,7 @@
  *   node design/contrast.mjs [--config design/design.json] [--min 4.5]
  */
 
+import { pathToFileURL } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { flatten, MODES } from "./tokens-to-css.mjs";
@@ -148,4 +149,6 @@ export function run(argv, cwd = process.cwd()) {
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(run(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(run(process.argv.slice(2)));
