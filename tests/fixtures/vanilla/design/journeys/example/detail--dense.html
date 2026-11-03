@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>detail · dense · example</title>
+    <!-- RELATIVE, NOT ABSOLUTE: a static journey is real files, so `../../studio-bridge.js`
+         resolves under a static server AND under file://. (A framework design app is a single
+         page served at every screen path, and uses `/studio-bridge.js` instead.) The tag is a
+         CLASSIC script in <head> — no defer, no module — so `?state`, `?variant` and `?theme`
+         are on <html> before first paint. -->
+    <script src="../../studio-bridge.js"></script>
+    <link rel="stylesheet" href="../../components.css" />
+  </head>
+  <body>
+    <main data-screen="detail" data-slot="page" data-states="error ready">
+      <div data-justify="between" data-slot="row">
+        <p data-slot="text" data-size="sm">A first item</p>
+        <p data-slot="text" data-size="xs" data-tone="quiet"><span data-bind="visitor">there</span></p>
+      </div>
+
+      <div data-slot="card" data-surface="flat">
+        <div data-slot="stack">
+          <span data-slot="badge" data-tone="danger" data-when="error"><span data-slot="badge-dot"></span>could not save</span>
+          <p data-slot="text" data-size="sm">
+            The same screen at half the vertical rhythm: one row of chrome, a flat surface, and the
+            actions inline. Compare it against detail on the variant axis.
+          </p>
+        </div>
+        <div data-slot="card-footer">
+          <button data-go="back" data-size="sm" data-slot="button" data-variant="ghost" type="button">Back</button>
+          <button data-go="done" data-size="sm" data-slot="button" type="button">Finish</button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

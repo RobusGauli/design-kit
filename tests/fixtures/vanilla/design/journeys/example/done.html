@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>done · example</title>
+    <!-- RELATIVE, NOT ABSOLUTE: a static journey is real files, so `../../studio-bridge.js`
+         resolves under a static server AND under file://. (A framework design app is a single
+         page served at every screen path, and uses `/studio-bridge.js` instead.) The tag is a
+         CLASSIC script in <head> — no defer, no module — so `?state`, `?variant` and `?theme`
+         are on <html> before first paint. -->
+    <script src="../../studio-bridge.js"></script>
+    <link rel="stylesheet" href="../../components.css" />
+  </head>
+  <body>
+    <main data-screen="done" data-slot="page" data-states="error ready">
+      <div data-when="error">
+        <div data-slot="empty">
+          <h4 data-slot="empty-title">Not finished</h4>
+          <p data-slot="empty-description">Something went wrong on the way here.</p>
+          <button data-go="list" data-slot="button" type="button">Start again</button>
+        </div>
+      </div>
+
+      <div data-slot="card" data-when="ready">
+        <div data-slot="card-header">
+          <h3 data-slot="card-title">All done</h3>
+          <p data-slot="card-description">Thanks, <span data-bind="visitor">there</span>.</p>
+        </div>
+        <div data-slot="stack">
+          <h2 data-slot="heading" data-size="card">What happens next</h2>
+          <p data-slot="text" data-size="sm" data-tone="muted">
+            Nothing. This is a prototype. It is interactive enough to portray the message and no
+            further; a prototype that needs to validate a form is a product feature.
+          </p>
+        </div>
+        <div data-slot="card-footer">
+          <!-- The back edge: the flow map breaks the cycle here and draws this one dashed. -->
+          <button data-go="list" data-slot="button" data-variant="ghost" type="button">Back to the list</button>
+          <!-- An OVERLAY is Figma's second action: `data-go="#id"` opens a <dialog> in place. -->
+          <button data-go="#what-now" data-slot="button" type="button">What now?</button>
+        </div>
+      </div>
+
+      <dialog data-slot="card" id="what-now">
+        <div data-slot="stack">
+          <h2 data-slot="heading" data-size="card">What now</h2>
+          <p data-slot="text" data-size="sm">
+            Comment on anything in this screen from the studio, send the round, and the agent
+            answers it item by item.
+          </p>
+          <form data-justify="end" data-slot="row" method="dialog">
+            <button data-size="sm" data-slot="button" data-variant="secondary" type="submit">Close</button>
+          </form>
+        </div>
+      </dialog>
+    </main>
+  </body>
+</html>

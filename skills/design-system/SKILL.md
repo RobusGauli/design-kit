@@ -105,7 +105,7 @@ mechanical half of them.
 
 ## 5. The scripts — deterministic work is a script, never prose
 
-All five are zero-dependency and run under Node 18+ or Bun. Copy them from this skill's `scripts/` to `design/` and
+All six are zero-dependency and run under Node 18+ or Bun. Copy them from this skill's `scripts/` to `design/` and
 run them from the repo root. Never edit a copy: re-copying them (or `harbor design init`) brings
 the copies under `design/` up to the skill's bytes, and never touches `DESIGN.md`, `design.json` or
 a journey.
@@ -116,9 +116,10 @@ a journey.
 | `scripts/contrast.mjs` | WCAG 2.x over the declared pairs, in every mode. **Not APCA**: it was pulled from the WCAG 3 draft in 2023 and nothing will settle before ~2029 |
 | `scripts/lint.mjs` | §4's mechanical half, plus the manifest and link checks, plus `--build <dir>` for the production guard |
 | `scripts/shots.mjs` | every screen × variant × state × theme, reusing a preview that already answers and otherwise starting its own on an ephemeral port |
+| `scripts/studio.mjs` | a read-only dashboard over `design/journeys` (screens, flow map, shots, JOURNEY.md) on 127.0.0.1: `node design/studio.mjs --open`. Writes nothing, starts no preview |
 | `scripts/verify.mjs` | runs the first three and prints PASS or FAIL per check. **This output is what counts, not your prose** |
 
-`assets/` holds the three token presets, `studio-bridge.js` (copy it to `design/`, never edit it),
+`assets/` holds the three token presets, `studio-bridge.js` (the same file Harbor ships: copy it to `design/`, never edit it),
 the `design.json` template and the design entry `index.html`.
 
 ## 6. `design.json` — the one contract

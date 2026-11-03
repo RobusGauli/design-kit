@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>list · example</title>
+    <!-- RELATIVE, NOT ABSOLUTE: a static journey is real files, so `../../studio-bridge.js`
+         resolves under a static server AND under file://. (A framework design app is a single
+         page served at every screen path, and uses `/studio-bridge.js` instead.) The tag is a
+         CLASSIC script in <head> — no defer, no module — so `?state`, `?variant` and `?theme`
+         are on <html> before first paint. -->
+    <script src="../../studio-bridge.js"></script>
+    <link rel="stylesheet" href="../../components.css" />
+  </head>
+  <body>
+    <main data-screen="list" data-slot="page" data-states="empty loading error ready">
+      <div data-slot="stack">
+        <h1 data-slot="heading">Everything you have</h1>
+        <p data-slot="text" data-size="sm" data-tone="muted">
+          Pick one to see it. The name you type below travels with you: that is the session bag,
+          and it is most of what "interactive enough to portray the message" needs.
+        </p>
+      </div>
+
+      <!-- THE SESSION BAG: a NAMED control is mirrored into sessionStorage on change, and
+           `data-bind` on a later screen is filled from it. No wiring, no state, no store.
+           A `type="password"` control and any name starting with `_` are never stored. -->
+      <div data-slot="field">
+        <label data-slot="field-label" for="visitor">Your name</label>
+        <input data-slot="input" id="visitor" name="visitor" placeholder="e.g. Ada" />
+        <p data-slot="field-hint">It shows up on the next screen.</p>
+      </div>
+
+      <div data-when="empty">
+        <div data-slot="empty">
+          <h4 data-slot="empty-title">No items</h4>
+          <p data-slot="empty-description">Nothing has been added to this account yet.</p>
+          <button data-go="done" data-slot="button" type="button">Skip to the end</button>
+        </div>
+      </div>
+
+      <div data-slot="stack" data-when="loading">
+        <span data-slot="skeleton" data-shape="card"></span>
+        <span data-slot="skeleton" data-shape="card"></span>
+        <span data-slot="skeleton" data-shape="card"></span>
+      </div>
+
+      <div data-slot="stack" data-when="error ready">
+        <div data-slot="row" data-when="error">
+          <span data-slot="badge" data-tone="danger"><span data-slot="badge-dot"></span>could not refresh</span>
+          <p data-slot="text" data-size="sm" data-tone="muted">Showing what was here last.</p>
+        </div>
+
+        <!-- A LINK IS `data-go`, AND ITS VALUE IS ALWAYS A STRING LITERAL. That is what lets the
+             flow map be derived by a grep rather than by running anything. -->
+        <div data-go="detail" data-slot="card" data-surface="interactive">
+          <div data-slot="card-header">
+            <h3 data-slot="card-title">A first item</h3>
+            <p data-slot="card-description">ready to look at</p>
+          </div>
+        </div>
+        <div data-go="detail" data-slot="card" data-surface="interactive">
+          <div data-slot="card-header">
+            <h3 data-slot="card-title">A second item</h3>
+            <p data-slot="card-description">also ready</p>
+          </div>
+        </div>
+      </div>
+
+      <div data-justify="end" data-slot="row">
+        <button data-go="done" data-slot="button" data-variant="ghost" type="button">Finish</button>
+        <button data-go="detail" data-slot="button" type="button">Open the first</button>
+      </div>
+    </main>
+  </body>
+</html>

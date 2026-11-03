@@ -129,6 +129,7 @@ one journey is what this rule exists to stop.
    a plain terminal — run `bun design/shots.mjs <name>` (or `node`, see below) — **the journey's name is required**;
    every screen × variant × state × theme of THAT journey, into `.harbor/shots/<name>/`. Without it the script
    refuses and says which names are real: shooting every journey re-writes PNGs nobody asked for.
+   Outside Harbor, the person browses the journeys with `node design/studio.mjs --open` (read-only).
    **Prefer `bun design/shots.mjs <name>` when `bun` is on PATH, and `node design/shots.mjs <name>`
    otherwise — both are allowed, and both take the same arguments.** Under bun the script shoots
    through the system WebKit with nothing installed (1.5 s for 24 shots); under node it needs a
