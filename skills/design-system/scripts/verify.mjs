@@ -36,6 +36,7 @@
  * The PNG is decoded with `node:zlib`, which is a builtin — this file still takes no dependency.
  */
 
+import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -441,4 +442,6 @@ export function run(argv, cwd = process.cwd()) {
   return failed === 0 ? 0 : 1;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(run(process.argv.slice(2)));
+/* pathToFileURL, not `file://${argv[1]}`: that never matches on Windows or in a path with a
+   space, and the script would then exit 0 having checked nothing. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(run(process.argv.slice(2)));

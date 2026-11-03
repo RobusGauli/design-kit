@@ -24,7 +24,7 @@ const changes = (out) => out.split("\n").filter((l) => /^(wrote|refreshed|kept|a
 describe(`installer (${WINDOWS ? "install.ps1" : "install.sh"})`, () => {
   let repo;
   before(() => {
-    repo = mkdtempSync(join(tmpdir(), "dk-repo-"));
+    repo = mkdtempSync(join(tmpdir(), "dk repo "));
     execFileSync("git", ["init", "-q", repo]);
     writeFileSync(join(repo, "AGENTS.md"), "# My app\n");
   });
