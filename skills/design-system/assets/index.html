@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>design: journeys and the catalogue</title>
+    <!-- THE BRIDGE IS A CLASSIC SCRIPT, IN <head>, WITH NO `defer` AND NO `type="module"`. That
+         is what makes it stamp `?state`, `?variant` and `?theme` onto <html> BEFORE FIRST PAINT.
+         An `import` in a framework entry stamps after the bundle evaluates, which is a flash of
+         the other theme in every screenshot.
+
+         THE PATH: use `./studio-bridge.js` (or `../../studio-bridge.js` from a journey directory)
+         when the screens are REAL FILES — it resolves under a static server and under `file://`
+         alike. Use an ABSOLUTE `/studio-bridge.js` when the design app is a single page served at
+         every screen path, or the relative one 404s on a nested route. -->
+    <script src="./studio-bridge.js"></script>
+    <link rel="stylesheet" href="./components.css" />
+  </head>
+  <body>
+    <main data-slot="page">
+      <h1 data-slot="heading">design</h1>
+      <p data-slot="text" data-tone="muted">
+        The playground. Screens live here and never in the production build.
+      </p>
+      <!-- One block per journey: its title, then a link per screen and per variant. -->
+      <div data-slot="stack">
+        <h2 data-slot="heading" data-size="card">&lt;journey title&gt;</h2>
+        <div data-slot="row">
+          <a data-slot="button" data-variant="secondary" href="./journeys/&lt;name&gt;/&lt;entry&gt;.html">
+            &lt;entry&gt; (entry)
+          </a>
+        </div>
+      </div>
+      <div data-slot="row">
+        <a data-slot="button" href="./catalogue.html">Open the catalogue</a>
+      </div>
+    </main>
+  </body>
+</html>

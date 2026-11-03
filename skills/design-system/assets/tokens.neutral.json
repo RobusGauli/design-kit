@@ -1,0 +1,544 @@
+{
+  "$description": "PRESET: neutral. The starting position of the knobs: a cool blue-cast gray ramp, an ink accent, 8/12/16/24 radii and a 4px grid. Copy one preset to your token file, change the PRIMITIVE tier, and regenerate — the semantic tier follows because it aliases rather than repeats. The design system's source of truth, in the Design Tokens Community Group format (first stable version, 2025.10). Three tiers: primitive (the ramps — THE KNOBS) → semantic (what a component asks for) → component (design/components.css). Generate design/tokens.css with `node design/tokens-to-css.mjs`; never hand-edit the CSS. A mode override rides on the token it overrides.",
+  "primitive": {
+    "$description": "THE KNOBS. Change a ramp here and the whole system follows, because nothing below this group names a literal.",
+    "gray": {
+      "$type": "color",
+      "$description": "0–400 are SURFACES and rules; 500–900 are TEXT grades, each clearing WCAG AA on the weaker of its two grounds.",
+      "0": {
+        "$value": "#ffffff",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#15181f"
+          }
+        }
+      },
+      "100": {
+        "$value": "#f4f6fb",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#1d212a"
+          }
+        }
+      },
+      "200": {
+        "$value": "#e8ebf3",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#262b36"
+          }
+        }
+      },
+      "300": {
+        "$value": "#d3d8e6",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#333947"
+          }
+        }
+      },
+      "400": {
+        "$value": "#aeb5c9",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#454c5f"
+          }
+        }
+      },
+      "500": {
+        "$value": "#666d83",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#7b8399"
+          }
+        }
+      },
+      "600": {
+        "$value": "#4a5063",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#98a1b8"
+          }
+        }
+      },
+      "700": {
+        "$value": "#363b4a",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#b6bed3"
+          }
+        }
+      },
+      "800": {
+        "$value": "#22262f",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#dee4f2"
+          }
+        }
+      },
+      "900": {
+        "$value": "#0d0f14",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#ffffff"
+          }
+        }
+      }
+    },
+    "alpha": {
+      "$type": "color",
+      "100": {
+        "$value": "rgba(55, 80, 155, 0.055)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(186, 192, 239, 0.07)"
+          }
+        }
+      },
+      "200": {
+        "$value": "rgba(12, 41, 126, 0.1)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(200, 210, 245, 0.13)"
+          }
+        }
+      },
+      "300": {
+        "$value": "rgba(12, 26, 105, 0.18)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(185, 201, 247, 0.22)"
+          }
+        }
+      }
+    },
+    "page": {
+      "$type": "color",
+      "$value": "#f1f4fa",
+      "$extensions": {
+        "ds.design/modes": {
+          "dark": "#0b0d12"
+        }
+      }
+    },
+    "ink": {
+      "$type": "color",
+      "$description": "The accent is ink: black on light, white on dark.",
+      "$value": "#000000",
+      "$extensions": {
+        "ds.design/modes": {
+          "dark": "#ffffff"
+        }
+      }
+    },
+    "ink-on": {
+      "$type": "color",
+      "$value": "#ffffff",
+      "$extensions": {
+        "ds.design/modes": {
+          "dark": "#0b0d12"
+        }
+      }
+    },
+    "signal": {
+      "$type": "color",
+      "$description": "Red refuses, green proves, amber is a human gate. Brightened in dark until each reads as colour rather than mud.",
+      "red": {
+        "$value": "#c73f38",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#ea6259"
+          }
+        }
+      },
+      "red-dim": {
+        "$value": "rgba(199, 63, 56, 0.13)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(234, 98, 89, 0.16)"
+          }
+        }
+      },
+      "red-ink": {
+        "$value": "#8f2721",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#ff9d95"
+          }
+        }
+      },
+      "green": {
+        "$value": "#2c8f43",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#46c356"
+          }
+        }
+      },
+      "green-dim": {
+        "$value": "rgba(44, 143, 67, 0.14)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(70, 195, 86, 0.15)"
+          }
+        }
+      },
+      "green-ink": {
+        "$value": "#1d6a30",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#86e090"
+          }
+        }
+      },
+      "amber": {
+        "$value": "#9a7514",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#e0b13a"
+          }
+        }
+      },
+      "amber-dim": {
+        "$value": "rgba(176, 137, 28, 0.16)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "rgba(224, 177, 58, 0.15)"
+          }
+        }
+      },
+      "amber-ink": {
+        "$value": "#74570d",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "#f2ce72"
+          }
+        }
+      }
+    },
+    "elevation": {
+      "$type": "shadow",
+      "rest": {
+        "$value": "0 1px 2px 0 rgba(12, 41, 126, 0.07), 0 3px 8px -2px rgba(12, 41, 126, 0.09)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 3px 8px -2px rgba(0, 0, 0, 0.55)"
+          }
+        }
+      },
+      "hover": {
+        "$value": "0 2px 4px 0 rgba(12, 41, 126, 0.08), 0 10px 24px -6px rgba(12, 41, 126, 0.16)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 10px 24px -6px rgba(0, 0, 0, 0.65)"
+          }
+        }
+      },
+      "pop": {
+        "$value": "0 2px 6px 0 rgba(12, 41, 126, 0.08), 0 16px 40px -10px rgba(12, 41, 126, 0.22)",
+        "$extensions": {
+          "ds.design/modes": {
+            "dark": "0 2px 6px 0 rgba(0, 0, 0, 0.5), 0 16px 40px -10px rgba(0, 0, 0, 0.7)"
+          }
+        }
+      }
+    }
+  },
+  "color": {
+    "$type": "color",
+    "$description": "The SEMANTIC tier: surface / on-surface pairs, which is what makes a contrast check mechanical. The eight required keys are bg, fg, border, accent, accent-fg, danger, danger-fg and focus.",
+    "bg": {
+      "$value": "{primitive.page}"
+    },
+    "fg": {
+      "$value": "{primitive.gray.900}"
+    },
+    "border": {
+      "$value": "{primitive.alpha.200}"
+    },
+    "accent": {
+      "$value": "{primitive.ink}"
+    },
+    "accent-fg": {
+      "$value": "{primitive.ink-on}"
+    },
+    "danger": {
+      "$description": "The danger SURFACE; danger-fg is what sits on it.",
+      "$value": "{primitive.signal.red-dim}"
+    },
+    "danger-fg": {
+      "$value": "{primitive.signal.red-ink}"
+    },
+    "focus": {
+      "$value": "{primitive.ink}"
+    },
+    "danger-strong": {
+      "$description": "The MARK: a dot, an invalid ring. Non-text, so 3:1 is its floor and it is not paired.",
+      "$value": "{primitive.signal.red}"
+    },
+    "success": {
+      "$value": "{primitive.signal.green-dim}"
+    },
+    "success-fg": {
+      "$value": "{primitive.signal.green-ink}"
+    },
+    "success-strong": {
+      "$value": "{primitive.signal.green}"
+    },
+    "warn": {
+      "$value": "{primitive.signal.amber-dim}"
+    },
+    "warn-fg": {
+      "$value": "{primitive.signal.amber-ink}"
+    },
+    "warn-strong": {
+      "$value": "{primitive.signal.amber}"
+    },
+    "surface": {
+      "$description": "What a card is made of — one step up from the page ground.",
+      "$value": "{primitive.gray.0}"
+    },
+    "surface-2": {
+      "$value": "{primitive.gray.100}"
+    },
+    "muted": {
+      "$value": "{primitive.gray.600}"
+    },
+    "quiet": {
+      "$value": "{primitive.gray.500}"
+    }
+  },
+  "space": {
+    "$type": "dimension",
+    "1": {
+      "$value": "4px"
+    },
+    "2": {
+      "$value": "8px"
+    },
+    "3": {
+      "$value": "12px"
+    },
+    "4": {
+      "$value": "16px"
+    },
+    "5": {
+      "$value": "20px"
+    },
+    "6": {
+      "$value": "24px"
+    },
+    "7": {
+      "$value": "28px"
+    },
+    "8": {
+      "$value": "32px"
+    },
+    "12": {
+      "$value": "48px"
+    }
+  },
+  "text": {
+    "$description": "Size and line height paired — naming the size sets the leading. THE FLOOR IS 12px.",
+    "xs": {
+      "size": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.35
+      }
+    },
+    "sm": {
+      "size": {
+        "$type": "dimension",
+        "$value": "14px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.45
+      }
+    },
+    "base": {
+      "size": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.55
+      }
+    },
+    "md": {
+      "size": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.3
+      }
+    },
+    "lg": {
+      "size": {
+        "$type": "dimension",
+        "$value": "25px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.2
+      }
+    },
+    "xl": {
+      "size": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.1
+      }
+    },
+    "2xl": {
+      "size": {
+        "$type": "dimension",
+        "$value": "50px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1.02
+      }
+    },
+    "3xl": {
+      "size": {
+        "$type": "dimension",
+        "$value": "64px"
+      },
+      "leading": {
+        "$type": "number",
+        "$value": 1
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "8px"
+    },
+    "md": {
+      "$value": "12px"
+    },
+    "lg": {
+      "$value": "16px"
+    },
+    "xl": {
+      "$value": "24px"
+    },
+    "full": {
+      "$value": "999px"
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "1": {
+      "$value": "{primitive.elevation.rest}"
+    },
+    "2": {
+      "$value": "{primitive.elevation.hover}"
+    },
+    "3": {
+      "$value": "{primitive.elevation.pop}"
+    },
+    "hairline": {
+      "$value": "inset 0 0 0 1px {color.border}"
+    },
+    "hairline-soft": {
+      "$value": "inset 0 0 0 1px {primitive.alpha.100}"
+    },
+    "hairline-strong": {
+      "$value": "inset 0 0 0 1px {primitive.alpha.300}"
+    },
+    "focus": {
+      "$description": "A ground-coloured gap and then the accent — far past WCAG 1.4.11's 3:1.",
+      "$value": "0 0 0 2px {primitive.gray.0}, 0 0 0 3px {color.focus}"
+    },
+    "edge-raised": {
+      "$description": "What makes a raised card read as raised, PER THEME: in dark every surface sits 1.09:1 off the ground and the light theme's shadow is invisible, so dark trades it for a 1px edge.",
+      "$value": "{shadow.hairline-soft}, {shadow.1}",
+      "$extensions": {
+        "ds.design/modes": {
+          "dark": "inset 0 0 0 1px {primitive.alpha.300}, {shadow.1}"
+        }
+      }
+    }
+  },
+  "motion": {
+    "fast": {
+      "$type": "duration",
+      "$value": "120ms"
+    },
+    "base": {
+      "$type": "duration",
+      "$value": "200ms"
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": "280ms"
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "$value": [0.2, 0.8, 0.2, 1]
+    }
+  },
+  "breakpoint": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "640px"
+    },
+    "md": {
+      "$value": "768px"
+    },
+    "lg": {
+      "$value": "1024px"
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "$description": "THE ONE BRAND OVERRIDE POINT. Put your own face first and every component follows.",
+    "sans": {
+      "$value": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
+    },
+    "mono": {
+      "$value": "ui-monospace, \"SF Mono\", \"Cascadia Code\", Menlo, Consolas, monospace"
+    }
+  },
+  "track": {
+    "$type": "dimension",
+    "head": {
+      "$value": "-0.025em"
+    },
+    "ui": {
+      "$value": "-0.015em"
+    },
+    "none": {
+      "$value": "0"
+    }
+  },
+  "meta": {
+    "color-scheme": {
+      "$type": "string",
+      "$description": "A PLAIN property, not a custom one — it is what makes the UA's own controls and scrollbars follow the theme.",
+      "$value": "light",
+      "$extensions": {
+        "ds.design/css": {
+          "property": "color-scheme"
+        },
+        "ds.design/modes": {
+          "dark": "dark"
+        }
+      }
+    }
+  }
+}
