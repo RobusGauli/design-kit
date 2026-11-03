@@ -24,14 +24,15 @@ On Windows, in PowerShell (from Git Bash, wrap it in `powershell -NoProfile -Com
 irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | iex
 ```
 
-It writes the same layout Harbor's `design init` writes, so the repo also works in Harbor:
+Everything it writes is inside the repo:
 
 | path | what |
 |---|---|
-| `.harbor/skills/design-system/`, `.harbor/skills/prototype/` | the two skills |
+| `.agents/skills/design-system/`, `.agents/skills/prototype/` | the two skills |
 | `.claude/skills/`, `.kiro/skills/`, `.cursor/rules/design.mdc`, `AGENTS.md` | pointers so each agent finds them |
 | `design/DESIGN.md` | the brief, a stub of questions (never overwritten) |
 | `design/studio-bridge.js`, `design/*.mjs` | the prototype runtime and the scripts |
+| `design/.shots/.gitignore` | keeps screenshots out of git |
 
 It never deletes a file. A file that exists and differs is refreshed only when it is design-kit's
 own; `design/DESIGN.md` is kept, and `AGENTS.md` gets one paragraph appended once. Its output

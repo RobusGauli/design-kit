@@ -41,7 +41,7 @@ that switch** — `design/lint.mjs` refuses them in screens, and
   --text-sm: var(--ds-text-sm-size);
   --text-sm--line-height: var(--ds-text-sm-leading);
 
-  --ease-harbor: var(--ds-motion-easing);
+  --ease-standard: var(--ds-motion-easing);
 }
 ```
 

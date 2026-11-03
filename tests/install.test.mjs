@@ -30,14 +30,14 @@ describe(`installer (${WINDOWS ? "install.ps1" : "install.sh"})`, () => {
   });
   after(() => rmSync(repo, { recursive: true, force: true }));
 
-  test("writes Harbor's layout into the repo and ends with done.", () => {
+  test("writes only inside the repo, no .harbor, and ends with done.", () => {
     const run = install(repo);
     assert.equal(run.code, 0, run.err);
     assert.match(run.out, /\ndone\.\n$/);
     for (const f of [
-      ".harbor/skills/design-system/SKILL.md",
-      ".harbor/skills/design-system/scripts/studio.mjs",
-      ".harbor/skills/prototype/references/rounds.md",
+      ".agents/skills/design-system/SKILL.md",
+      ".agents/skills/design-system/scripts/studio.mjs",
+      ".agents/skills/prototype/references/rounds.md",
       ".claude/skills/design-system/SKILL.md",
       ".kiro/skills/prototype/SKILL.md",
       ".cursor/rules/design.mdc",
@@ -45,11 +45,11 @@ describe(`installer (${WINDOWS ? "install.ps1" : "install.sh"})`, () => {
       "design/studio-bridge.js",
       "design/studio.mjs",
       "design/lint.mjs",
-      ".harbor/shots/.gitignore",
-      ".harbor/reviews/.gitignore",
+      "design/.shots/.gitignore",
     ]) {
       assert.ok(existsSync(join(repo, f)), `${f} missing`);
     }
+    assert.ok(!existsSync(join(repo, ".harbor")), "wrote a .harbor directory");
     assert.equal(
       readFileSync(join(repo, "design/studio-bridge.js"), "utf8"),
       readFileSync(join(KIT, "skills/design-system/assets/studio-bridge.js"), "utf8"),

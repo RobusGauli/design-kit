@@ -3,15 +3,15 @@
 #
 #   cd <your repo> && curl -fsSL https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.sh | sh
 #
-# It writes the same layout Harbor's `design init` writes, so the repo also works in Harbor:
-#   .harbor/skills/design-system/  .harbor/skills/prototype/   the skills (the one source of truth)
+# Everything it writes is inside the repo:
+#   .agents/skills/design-system/  .agents/skills/prototype/   the skills (the one source of truth)
 #   .claude/skills/  .kiro/skills/  .cursor/rules/design.mdc     pointers to them, per agent
 #   AGENTS.md                                                    one paragraph (Codex and others)
 #   design/DESIGN.md                                             the brief, a stub of questions
 #   design/studio-bridge.js  design/*.mjs                         the runtime and the scripts
-#   .harbor/reviews/.gitignore  .harbor/shots/.gitignore         rounds and pictures stay out of git
+#   design/.shots/.gitignore                                     pictures stay out of git
 #
-# The overwrite rule is per file, the same as Harbor's:
+# The overwrite rule is per file:
 #   missing          -> written
 #   identical        -> skipped
 #   ours, differs    -> refreshed (skills, pointers, bridge, scripts: never edit them by hand)
@@ -61,9 +61,9 @@ main() {
   done
   VERSION=$(cat "$SRC/VERSION" 2>/dev/null || echo unknown)
 
-  # The skills, whole, under .harbor/skills/.
+  # The skills, whole, under .agents/skills/.
   (cd "$SRC/skills" && find design-system prototype -type f ! -name '.DS_Store') | while IFS= read -r f; do
-    put ours "$SRC/skills/$f" ".harbor/skills/$f"
+    put ours "$SRC/skills/$f" ".agents/skills/$f"
   done
   # The pointers, one per agent.
   (cd "$SRC/template" && find .claude .kiro .cursor -type f) | while IFS= read -r f; do
@@ -77,9 +77,8 @@ main() {
   # Yours: written once, never overwritten.
   put yours "$SRC/skills/design-system/assets/DESIGN.md" design/DESIGN.md
   append_once "$SRC/template/AGENTS.md" AGENTS.md
-  for d in .harbor/reviews .harbor/shots; do
-    [ -e "$DEST/$d/.gitignore" ] || { mkdir -p "$DEST/$d" && printf '*\n' > "$DEST/$d/.gitignore" && say "wrote:     $d/.gitignore"; }
-  done
+  [ -e "$DEST/design/.shots/.gitignore" ] \
+    || { mkdir -p "$DEST/design/.shots" && printf '*\n' > "$DEST/design/.shots/.gitignore" && say "wrote:     design/.shots/.gitignore"; }
 
   if ! command -v node >/dev/null 2>&1 && ! command -v bun >/dev/null 2>&1; then
     say "warning:   neither node (18+) nor bun is on PATH; the design scripts need one of them."

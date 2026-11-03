@@ -3,7 +3,7 @@
  *
  *   node design/studio.mjs [--port N] [--open]        run from the repo root
  *
- * It serves `design/` (screens, the bridge, the sheets) and `.harbor/shots/` on 127.0.0.1 and one
+ * It serves `design/` (screens, the bridge, the sheets) and `design/.shots/` on 127.0.0.1 and one
  * dashboard page: journeys, screens and variants from the files on disk, a screen in a frame with
  * its state / theme / variant / viewport, the flow map grepped from `data-go` literals, the shots,
  * and JOURNEY.md. It never writes, never runs anything from the repo and never starts a preview:
@@ -198,7 +198,7 @@ async function shotsOf(shotsDir, name) {
 /** Everything the dashboard shows, built from the files on disk. */
 async function buildIndex(root) {
   const designDir = join(root, "design");
-  const shotsDir = join(root, ".harbor", "shots");
+  const shotsDir = join(root, "design", ".shots");
   const config = await jsonInside(designDir, join(designDir, "design.json"), "design.json");
   const names = (await direntsOf(join(designDir, "journeys")))
     .filter((e) => e.isDirectory() && !e.name.startsWith("."))
@@ -243,7 +243,8 @@ function startWatching(targets, notify, log) {
   for (const target of targets) {
     try {
       const watcher = watch(target.dir, { recursive: true }, (_event, name) => {
-        if (name === null || !basename(String(name)).startsWith(".")) notify(target.kind, name);
+        /* a dot segment anywhere is not a design change: design/.shots/ is watched as `shots` */
+        if (name === null || !String(name).split(/[\\/]/).some((s) => s.startsWith("."))) notify(target.kind, name);
       });
       watcher.on("error", () => {});
       stops.push(() => watcher.close());
@@ -349,7 +350,7 @@ function pageFor(origin) {
 export async function start({ root = process.cwd(), port = DEFAULT_PORT, log = console.error } = {}) {
   const repo = resolve(root);
   const designDir = join(repo, "design");
-  const shotsDir = join(repo, ".harbor", "shots");
+  const shotsDir = join(repo, "design", ".shots");
   const clients = new Set();
   let indexing = null;
   let listening = 0;

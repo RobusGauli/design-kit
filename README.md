@@ -35,14 +35,14 @@ irm https://raw.githubusercontent.com/RobusGauli/design-kit/main/install.ps1 | i
 ```
 
 It installs **into the repo**, not your home directory, so the skills are committed with the
-project and every teammate's agent gets them. It writes the same layout Harbor's `design init`
-writes, so the repo also works in Harbor:
+project and every teammate's agent gets them. Everything it writes is inside the repo:
 
 ```
-.harbor/skills/design-system/  .harbor/skills/prototype/    the two skills
+.agents/skills/design-system/  .agents/skills/prototype/    the two skills
 .claude/skills/  .kiro/skills/  .cursor/rules/  AGENTS.md    pointers, so each agent finds them
 design/DESIGN.md                                             the brief (yours; never overwritten)
 design/studio-bridge.js  design/*.mjs                        the prototype runtime and the scripts
+design/.shots/                                               screenshots (git-ignored)
 ```
 
 It downloads the **latest release** (not `main`), never deletes a file, refreshes only its own files
@@ -61,11 +61,11 @@ screen in a frame with state, theme, variant and viewport controls, a flow map d
 Screens must be plain `.html`, or declare `preview.origin` in `design/design.json` and start that
 preview yourself. Node 18+ or Bun, no dependencies.
 
-## Source
+## Harbor
 
-These skills are published from Harbor, where the same skills
-ship with the Design extension (`harbor design init`). Inside Harbor a studio takes the
-screenshots and sends review rounds; outside it, `shots.mjs` takes them from a terminal.
+`design/studio-bridge.js` is byte-for-byte the file Harbor's
+design studio ships, so the same screens open in Harbor's studio unchanged. Nothing else in a
+design-kit repo is Harbor's, and nothing is written under `.harbor/`.
 
 ## License
 

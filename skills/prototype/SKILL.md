@@ -9,7 +9,7 @@ A journey is a directory of screens a person can click through. It is **hi-fi an
 enough to portray the message, and no further**: `data-go` and the four states are the whole
 vocabulary. A prototype that needs to validate a form is a product feature — say so and stop.
 
-Read `.harbor/skills/design-system/SKILL.md` first. **Build from the system ONLY**; if the system
+Read `.agents/skills/design-system/SKILL.md` first. **Build from the system ONLY**; if the system
 does not exist yet, laying it is the work that comes before this one.
 
 ## 1. A journey is a directory
@@ -24,11 +24,9 @@ design/journeys/<name>/
   targets/               the references: Figma exports, a photo of a whiteboard
 ```
 
-Its review rounds and the intents beside them (what the designer shaped by hand, referenced by a
-round) are NOT in the journey: they live under `.harbor/reviews/journey/<name>/`, which git ignores.
-Nor are its PICTURES: `.harbor/shots/<name>/<id>[--<variant>].<state>.<theme>.png`, git-ignored
-too. They are Harbor's — the studio takes them, and `shots.mjs` writes there from a terminal — so
-you never commit one, and a shot is never part of the turn's work.
+Its PICTURES are NOT in the journey: `design/.shots/<name>/<id>[--<variant>].<state>.<theme>.png`,
+git-ignored. `shots.mjs` writes them; you never commit one, and a shot is never part of the turn's
+work. Nor is a review round: when one arrives, the turn names its file (§6).
 
 `journey.json` holds **only what the files cannot say**:
 
@@ -122,14 +120,12 @@ one journey is what this rule exists to stop.
 4. **A component the system has not got goes under `**Not in the system yet:**` in the journey's
    `JOURNEY.md` and you STOP there for that component.** Extending the system is its own decision, and it is
    the designer's.
-5. **INSIDE HARBOR, HARBOR TAKES THE PICTURES** — `HARBOR_DESIGN_SHOTS=1` is set in your
-   environment, and the studio photographs every screen × variant × state × theme as the screens
-   change. **Never run `shots.mjs` while Harbor is on** (it says so in one line and does nothing):
-   your sandbox cannot launch a browser, and the old run hung for minutes. Outside Harbor —
-   a plain terminal — run `bun design/shots.mjs <name>` (or `node`, see below) — **the journey's name is required**;
-   every screen × variant × state × theme of THAT journey, into `.harbor/shots/<name>/`. Without it the script
-   refuses and says which names are real: shooting every journey re-writes PNGs nobody asked for.
-   Outside Harbor, the person browses the journeys with `node design/studio.mjs --open` (read-only).
+5. **TAKE THE PICTURES** — run `bun design/shots.mjs <name>` (or `node`, see below) — **the
+   journey's name is required**; every screen × variant × state × theme of THAT journey, into
+   `design/.shots/<name>/`. Without it the script refuses and says which names are real: shooting
+   every journey re-writes PNGs nobody asked for. If the script says the environment already
+   takes the pictures, believe it and move on. The person browses the journeys, the flow and the
+   pictures with `node design/studio.mjs --open` (read-only).
    **Prefer `bun design/shots.mjs <name>` when `bun` is on PATH, and `node design/shots.mjs <name>`
    otherwise — both are allowed, and both take the same arguments.** Under bun the script shoots
    through the system WebKit with nothing installed (1.5 s for 24 shots); under node it needs a
@@ -153,32 +149,29 @@ one journey is what this rule exists to stop.
    `not committed yet` in amber over one, and that is this step missing).
 9. Stop and say **what to look at first**: which screen, which state, which viewport,
    and what to compare it against. You cannot see the running screens; the designer's eyes are
-   the acceptance. COUNT what you can count (`ls .harbor/shots/<name> | wc -l`) and say
+   the acceptance. COUNT what you can count (`ls design/.shots/<name> | wc -l`) and say
    nothing you did not count.
 
    **THE CLOSING SENTENCE REPORTS THE PICTURES, AND IT ASKS FOR NOTHING.** End with the count you
-   took — or, inside Harbor, that the studio is taking them — in these words or as near as makes
-   no difference:
+   took, in these words or as near as makes no difference:
 
-   > `<n>` screens are in the studio, with `<count>` pictures (Harbor is taking them as you look);
-   > leave notes on the screens when you have looked.
+   > `<n>` screens are ready, with `<count>` pictures; browse them with
+   > `node design/studio.mjs --open`.
 
    Never claim pictures you did not count: zero is a number, and `verify.mjs` says `shots SKIP —
    none taken` over it.
 
    **Never ask the designer to type anything** — not *reply "continue"*, not *let me know*, not
-   a command for their own terminal, not a question they have to answer in the chat. Everything
-   they might do next is a control on the page they are already looking at: Comment, Area, Send
-   round — and the signature, where there is one, is the person's, from the studio. A closing
-   line that asks for a keystroke is asking them to leave the surface the whole journey was built
-   for, and it is the last thing they read.
+   a question they have to answer in the chat. The one command the closing sentence names is how
+   they look; what they say next is theirs. The signature, where there is one, is the person's,
+   never yours.
 
 ## 6. Answering a round
 
-A round is ONE file — `.harbor/reviews/journey/<name>/round-<n>.md` — and the turn that arrives
+A round is ONE file, written by the review tool the designer uses, and the turn that arrives
 names it by its absolute path: *Answer review round 2 of checkout: read `<path>` and follow its
-header.* (`references/rounds.md` quotes the whole turn.) It lives under `.harbor/reviews/`, which
-git ignores: the round is iteration, the prototype is the product, so
+header.* (`references/rounds.md` quotes the whole turn.) Read it where the turn says it is, and
+never commit it: the round is iteration, the prototype is the product, so
 you commit what you changed and never the round file. One numbered item per pin: the designer's
 note is the item, and the line under it names the screen's file, then the screen, the variant,
 the state, the theme, the viewport, the component path, a selector and the rect. It arrives as ONE
@@ -190,7 +183,7 @@ instruction and you answer it as one piece of work:
 ```
 
 - Read the file. Change the prototype. **Tick the box** and write ONE line after the arrow.
-- Re-shoot what moved (inside Harbor the studio does it), and commit the screens you changed —
+- Re-shoot what moved, and commit the screens you changed —
   never the round file, never a picture.
 - **Never start, stop or kill the preview server. If `preview.origin` answers, shoot through it;
   if it does not, `shots.mjs` starts and stops its own on a free port.** The designer is watching
@@ -209,5 +202,5 @@ instruction and you answer it as one piece of work:
 - Not a place for real data, real validation, or real branching. Two buttons with two `data-go`s
   is the branch.
 - Not a place to invent a token, a colour, a font size or a component.
-- Not signed by you. **The signature, where there is one, is the person's — from the studio**;
+- Not signed by you. **The signature, where there is one, is the person's**;
   never send them to a terminal for it, never ask them to type.

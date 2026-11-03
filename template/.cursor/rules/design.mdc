@@ -7,8 +7,8 @@ alwaysApply: false
 ## Design work in this repo
 
 Screens and journeys live in `design/`, never in the production build. Before writing any UI,
-read `.harbor/skills/design-system/SKILL.md` (the foundations: tokens, scale, states, rules, lints)
-and `.harbor/skills/prototype/SKILL.md` (journeys, screens, variants, `data-go`, shots, rounds),
+read `.agents/skills/design-system/SKILL.md` (the foundations: tokens, scale, states, rules, lints)
+and `.agents/skills/prototype/SKILL.md` (journeys, screens, variants, `data-go`, shots, rounds),
 then `design/DESIGN.md`. A journey is a directory under `design/journeys/<name>/`: its brief in
 `JOURNEY.md`, one file per screen, a variant is a `<id>--<variant>.<ext>` file, a state is a
 `?state=` parameter, and a link is a `data-go="<screen>"` attribute whose value is always a string

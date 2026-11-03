@@ -62,7 +62,7 @@
     $skills = Join-Path $Src "skills"
     foreach ($s in @("design-system", "prototype")) {
       Get-ChildItem -Recurse -File (Join-Path $skills $s) | Where-Object { $_.Name -ne ".DS_Store" } |
-        Sort-Object FullName | ForEach-Object { Put "ours" $_.FullName (".harbor/skills/" + (Rel $skills $_.FullName)) }
+        Sort-Object FullName | ForEach-Object { Put "ours" $_.FullName (".agents/skills/" + (Rel $skills $_.FullName)) }
     }
     $tpl = Join-Path $Src "template"
     foreach ($d in @(".claude", ".kiro", ".cursor")) {
@@ -81,13 +81,11 @@
       Add-Content -LiteralPath $agents -Value ("`n" + (Get-Content -LiteralPath $agentsFrom -Raw)) -NoNewline
       Write-Output "appended:  AGENTS.md"
     }
-    foreach ($d in @(".harbor/reviews", ".harbor/shots")) {
-      $ignore = Join-Path $Dest "$d/.gitignore"
-      if (-not (Test-Path -LiteralPath $ignore)) {
-        New-Item -ItemType Directory -Force -Path (Join-Path $Dest $d) | Out-Null
-        [IO.File]::WriteAllText($ignore, "*`n")
-        Write-Output "wrote:     $d/.gitignore"
-      }
+    $ignore = Join-Path $Dest "design/.shots/.gitignore"
+    if (-not (Test-Path -LiteralPath $ignore)) {
+      New-Item -ItemType Directory -Force -Path (Join-Path $Dest "design/.shots") | Out-Null
+      [IO.File]::WriteAllText($ignore, "*`n")
+      Write-Output "wrote:     design/.shots/.gitignore"
     }
     if (-not (Get-Command node -ErrorAction SilentlyContinue) -and -not (Get-Command bun -ErrorAction SilentlyContinue)) {
       Write-Output "warning:   neither node (18+) nor bun is on PATH; the design scripts need one of them."

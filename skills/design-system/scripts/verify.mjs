@@ -259,15 +259,15 @@ export function pngInk(buf) {
   return { ink: differ / (head.width * head.height), why: "" };
 }
 
-/** Every picture Harbor (or `shots.mjs`) took of a journey the config's screen roots hold —
- *  `.harbor/shots/<journey>/*.png`, git-ignored: the pictures are Harbor's, never committed. */
+/** Every picture `shots.mjs` took of a journey the config's screen roots hold —
+ *  `design/.shots/<journey>/*.png`, git-ignored: pictures are evidence, never committed. */
 export function shotFiles(config, cwd) {
   const out = [];
   for (const base of config.screens ?? []) {
     const dir = isAbsolute(base) ? base : join(cwd, base);
     if (!existsSync(dir)) continue;
     for (const name of readdirSync(dir).sort()) {
-      const shots = join(cwd, ".harbor", "shots", name);
+      const shots = join(cwd, "design", ".shots", name);
       if (!statSync(join(dir, name)).isDirectory()) continue;
       if (!existsSync(shots) || !statSync(shots).isDirectory()) continue;
       for (const file of readdirSync(shots).sort()) {
