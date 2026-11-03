@@ -67,6 +67,12 @@ preview yourself. Node 18+ or Bun, no dependencies.
 design studio ships, so the same screens open in Harbor's studio unchanged. Nothing else in a
 design-kit repo is Harbor's, and nothing is written under `.harbor/`.
 
+Opening a design-kit repo in Harbor works as it is: Harbor recognises it by `design/`, takes the
+screenshots itself, and the scripts stand down there (`HARBOR_DESIGN_SHOTS=1`). If you also run
+Harbor's `design init` in it, Harbor adds its own `.harbor/skills/` and repoints the agent
+pointers there; from then on update the repo with **one** installer, not both, or the pointers
+flip back and forth between the two copies.
+
 ## License
 
 MIT

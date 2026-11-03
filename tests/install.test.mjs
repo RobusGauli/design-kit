@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, appendFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { after, before, describe, test } from "node:test";
@@ -76,6 +76,35 @@ describe(`installer (${WINDOWS ? "install.ps1" : "install.sh"})`, () => {
     assert.deepEqual(changes(run.out).sort(), ["kept:      design/DESIGN.md (yours; left as it is)", "refreshed: design/lint.mjs"]);
     assert.match(readFileSync(join(repo, "design/DESIGN.md"), "utf8"), /my answers\n$/);
     assert.doesNotMatch(readFileSync(join(repo, "design/lint.mjs"), "utf8"), /\/\/ edited/);
+  });
+
+  test("refuses a design/ that is a symlink, before writing anything", { skip: WINDOWS && "symlinks need privileges" }, () => {
+    const out = mkdtempSync(join(tmpdir(), "dk-out-"));
+    const other = mkdtempSync(join(tmpdir(), "dk-repo2-"));
+    execFileSync("git", ["init", "-q", other]);
+    symlinkSync(out, join(other, "design"));
+    const run = install(other);
+    const wrote = readdirSync(out).length;
+    const left = readdirSync(other).sort();
+    rmSync(out, { recursive: true, force: true });
+    rmSync(other, { recursive: true, force: true });
+    assert.notEqual(run.code, 0);
+    assert.match(run.err + run.out, /symlink/);
+    assert.equal(wrote, 0, "wrote outside the repo");
+    assert.deepEqual(left, [".git", "design"]);
+  });
+
+  test("inside a host that takes the pictures, shots.mjs and verify.mjs stand down", () => {
+    const env = { ...process.env, HARBOR_DESIGN_SHOTS: "1" };
+    const shots = spawnSync("node", ["design/shots.mjs", "example"], { cwd: repo, env, encoding: "utf8" });
+    assert.equal(shots.status, 0, shots.stderr);
+    assert.match(shots.stdout, /takes the pictures itself/);
+    const verify = spawnSync(
+      "node",
+      ["--input-type=module", "-e", 'const { shotsCheck } = await import("./design/verify.mjs"); shotsCheck({ screens: ["design/journeys"] }, process.cwd());'],
+      { cwd: repo, env, encoding: "utf8" },
+    );
+    assert.match(verify.stdout, /shots SKIP — this environment takes the pictures itself/, verify.stderr);
   });
 
   test("refuses the home directory", { skip: WINDOWS && "PowerShell's $HOME cannot be redirected" }, () => {

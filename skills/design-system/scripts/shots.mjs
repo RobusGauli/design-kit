@@ -75,7 +75,8 @@
  *   node design/shots.mjs checkout --all        every shot, even the ones nothing touched
  *   node design/shots.mjs checkout --width 1440 --height 900
  *
- * A door that cannot open FAILS FAST, in one sentence, and never hangs.
+ * With HARBOR_DESIGN_SHOTS=1 the host takes the pictures, and this says so and exits 0. Anywhere
+ * else a door that cannot open FAILS FAST, in one sentence, and never hangs.
  */
 
 import { spawn, spawnSync } from "node:child_process";
@@ -605,6 +606,12 @@ export async function preview(config, designDir, root) {
 }
 
 export async function run(argv, cwd = process.cwd()) {
+  /* A host that photographs the screens itself (Harbor's studio does) sets this, and its sandbox
+     can neither open a port nor launch a browser: stand down at once instead of probing for 20 s. */
+  if (process.env.HARBOR_DESIGN_SHOTS === "1") {
+    console.log("This environment takes the pictures itself as the screens change — nothing to run here.");
+    return 0;
+  }
   const named = flag(argv, "config") ?? "design/design.json";
   const configPath = isAbsolute(named) ? named : join(cwd, named);
   if (!existsSync(configPath)) {

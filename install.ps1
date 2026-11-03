@@ -17,7 +17,17 @@
   & git -C $Dest rev-parse --is-inside-work-tree *> $null
   if ($LASTEXITCODE -ne 0) { Write-Output "warning:   $Dest is not a git repo; writing anyway" }
 
+  function Inside([string]$Rel) {
+    # Never write through a link out of the repo: resolve every existing folder on the way.
+    $at = $Dest
+    foreach ($part in $Rel.Split('/')) {
+      $at = Join-Path $at $part
+      $item = Get-Item -LiteralPath $at -Force -ErrorAction SilentlyContinue
+      if ($item -and $item.LinkType) { throw "$Rel leads through a link ($at); refusing to write through it" }
+    }
+  }
   function Put([string]$Owner, [string]$From, [string]$Rel) {
+    Inside $Rel
     $to = Join-Path $Dest $Rel
     if (-not (Test-Path -LiteralPath $to)) {
       New-Item -ItemType Directory -Force -Path (Split-Path $to) | Out-Null
@@ -58,6 +68,7 @@
     $Version = "unknown"
     if (Test-Path (Join-Path $Src "VERSION")) { $Version = (Get-Content (Join-Path $Src "VERSION") -Raw).Trim() }
 
+    foreach ($p in @(".agents/skills", ".claude/skills", ".kiro/skills", ".cursor/rules", "design/.shots", "AGENTS.md")) { Inside $p }
     function Rel([string]$Root, [string]$Full) { $Full.Substring($Root.Length + 1).Replace('\', '/') }
     $skills = Join-Path $Src "skills"
     foreach ($s in @("design-system", "prototype")) {
@@ -74,6 +85,7 @@
       ForEach-Object { Put "ours" $_.FullName ("design/" + $_.Name) }
     Put "yours" (Join-Path $skills "design-system\assets\DESIGN.md") "design/DESIGN.md"
 
+    Inside "AGENTS.md"; Inside "design/.shots/.gitignore"
     $agentsFrom = Join-Path $tpl "AGENTS.md"; $agents = Join-Path $Dest "AGENTS.md"
     if (-not (Test-Path -LiteralPath $agents)) {
       Copy-Item -LiteralPath $agentsFrom $agents; Write-Output "wrote:     AGENTS.md"

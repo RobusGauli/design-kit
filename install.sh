@@ -61,6 +61,11 @@ main() {
   done
   VERSION=$(cat "$SRC/VERSION" 2>/dev/null || echo unknown)
 
+  # Check every place it writes BEFORE writing anything, so a refusal leaves the repo untouched.
+  for p in .agents/skills .claude/skills .kiro/skills .cursor/rules design/.shots AGENTS.md; do
+    inside "$p"
+  done
+
   # The skills, whole, under .agents/skills/.
   (cd "$SRC/skills" && find design-system prototype -type f ! -name '.DS_Store') | while IFS= read -r f; do
     put ours "$SRC/skills/$f" ".agents/skills/$f"
@@ -77,6 +82,7 @@ main() {
   # Yours: written once, never overwritten.
   put yours "$SRC/skills/design-system/assets/DESIGN.md" design/DESIGN.md
   append_once "$SRC/template/AGENTS.md" AGENTS.md
+  inside design/.shots/.gitignore
   [ -e "$DEST/design/.shots/.gitignore" ] \
     || { mkdir -p "$DEST/design/.shots" && printf '*\n' > "$DEST/design/.shots/.gitignore" && say "wrote:     design/.shots/.gitignore"; }
 
@@ -94,16 +100,31 @@ main() {
 say() { printf '%s\n' "$*"; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 
+# inside RELPATH: die if any segment of it, below the repo, is a symlink (it could lead out).
+inside() {
+  at="$DEST"
+  old_ifs=$IFS; IFS=/
+  set -f
+  for seg in $1; do
+    at="$at/$seg"
+    [ ! -L "$at" ] || { IFS=$old_ifs; set +f; die "$1 goes through a symlink ($at); refusing to write through it"; }
+  done
+  IFS=$old_ifs
+  set +f
+}
+
 # put ours|yours SRC RELPATH: write it if missing; refresh it if ours and different; keep it if yours.
 put() {
   target="$DEST/$3"
+  inside "$3"
+  mkdir -p "$(dirname "$target")" || die "could not create the folder for $3"
   if [ ! -e "$target" ]; then
-    mkdir -p "$(dirname "$target")" && cp "$2" "$target"
+    cp "$2" "$target" || die "could not write $3"
     say "wrote:     $3"
   elif cmp -s "$2" "$target"; then
     :
   elif [ "$1" = ours ]; then
-    cp "$2" "$target"
+    cp "$2" "$target" || die "could not write $3"
     say "refreshed: $3"
   else
     say "kept:      $3 (yours; left as it is)"
@@ -113,6 +134,7 @@ put() {
 # append_once SRC RELPATH: write it if missing, else append it once, keyed on its first line.
 append_once() {
   target="$DEST/$2"
+  inside "$2"
   if [ ! -e "$target" ]; then
     cp "$1" "$target"
     say "wrote:     $2"

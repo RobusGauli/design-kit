@@ -287,6 +287,10 @@ export function shotFiles(config, cwd) {
 export function shotsCheck(config, cwd) {
   const files = shotFiles(config, cwd);
   if (files.length === 0) {
+    if (process.env.HARBOR_DESIGN_SHOTS === "1") {
+      console.log("shots SKIP — this environment takes the pictures itself");
+      return -1;
+    }
     console.log("shots SKIP — none taken (run `bun design/shots.mjs <journey>`)");
     return -1;
   }

@@ -158,6 +158,9 @@ one journey is what this rule exists to stop.
    > `<n>` screens are ready, with `<count>` pictures; browse them with
    > `node design/studio.mjs --open`.
 
+   **If `shots.mjs` said the environment takes the pictures itself, say that instead of a count,
+   and name no command**: the designer is already looking at the screens where they are.
+
    Never claim pictures you did not count: zero is a number, and `verify.mjs` says `shots SKIP —
    none taken` over it.
 
