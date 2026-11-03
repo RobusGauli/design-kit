@@ -147,6 +147,16 @@ describe("studio.mjs", () => {
     }
   });
 
+  test("the index never serves stale data, watcher or not", async () => {
+    const dir = join(root, "design", "journeys", "fresh");
+    await mkdir(dir, { recursive: true });
+    await writeFile(join(dir, "journey.json"), '{"title":"Fresh","entry":"a","screens":{}}');
+    await writeFile(join(dir, "a.html"), '<main data-screen="a" data-states="ready"></main>');
+    const names = JSON.parse((await get(server, "/_studio/index.json")).body).journeys.map((j) => j.name);
+    assert.ok(names.includes("fresh"), `fresh missing from ${names}`);
+    await rm(dir, { recursive: true });
+  });
+
   test("a change on disk is pushed over SSE", async () => {
     const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
     const screen = join(root, "design", "journeys", "example", "list.html");

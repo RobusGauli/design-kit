@@ -147,7 +147,7 @@ function previewOrigin(config) {
 
 async function screensOf(designDir, dir) {
   const entries = (await direntsOf(dir)).filter(
-    (e) => e.isFile() && SCREEN_EXTS.has(extname(e.name)) && !e.name.startsWith("studio-") && !e.name.startsWith("."),
+    (e) => e.isFile() && SCREEN_EXTS.has(extname(e.name)) && !e.name.startsWith("."),
   );
   const versions = await Promise.all(
     entries.map(async (e) => {
@@ -354,10 +354,11 @@ export async function start({ root = process.cwd(), port = DEFAULT_PORT, log = c
   let indexing = null;
   let listening = 0;
 
+  /* Built fresh per request, with concurrent requests sharing one build. Never cached past it:
+     a watcher that dies quietly (EMFILE, an unmounted dir) must cost live reload, not correctness. */
   const index = () => {
-    indexing ??= buildIndex(repo).catch((err) => {
+    indexing ??= buildIndex(repo).finally(() => {
       indexing = null;
-      throw err;
     });
     return indexing;
   };
@@ -428,7 +429,6 @@ export async function start({ root = process.cwd(), port = DEFAULT_PORT, log = c
     if (name) pending.get(kind).add(String(name));
     clearTimeout(timer);
     timer = setTimeout(() => {
-      indexing = null;
       for (const [k, files] of pending) {
         const line = `data: ${JSON.stringify({ kind: k, files: [...files] })}\n\n`;
         for (const client of clients) client.write(line);
@@ -989,7 +989,7 @@ function openBrowser(url, log) {
 
 async function main(argv) {
   const wanted = flag(argv, "port");
-  const port = wanted === null ? DEFAULT_PORT : Number(wanted);
+  const port = wanted === null ? DEFAULT_PORT : wanted === "" ? Number.NaN : Number(wanted);
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
     console.error(`studio: --port wants a number from 0 to 65535, got "${wanted}"`);
     return 2;
